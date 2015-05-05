@@ -54,6 +54,8 @@ var Bluetooth = {
     onReceivedDataHandler: null,
     onDevicesFoundHandler: null,
 
+    devicesFound: {},
+
     start: function() {
         Log("Starting the Bluetooth service");
         bluetoothle.isEnabled(function(enabled) {
@@ -87,17 +89,30 @@ var Bluetooth = {
 
     onDevicesFound: function(devices) {
         console.log(devices);
-        /*
-        if (devices.length == 0) {
-            Log("No Bluetooth devices found");
-        } else {
-            Log("Found Bluetooth devices", devices);
-            if (typeof Bluetooth.onDevicesFoundHandler == "function") {
-                Bluetooth.onDevicesFoundHandler();
-            }
+        if (typeof devices == "object") {
+            devices = [devices];
         }
-        */
-        setTimeout(bluetoothle.stopScan, 1000);
+
+        for (var i; i<devices.length; i++) {
+            Bluetooth.devicesFound[devices[i]['address']] = devices[i];
+        }
+
+        setTimeout(function() {
+
+            bluetoothle.isScanning(function(isScanning) {
+                if (isScanning) {
+                    bluetoothle.stopScan();
+
+                    console.log(devices);
+                    if (Bluetooth.devicesFound.length > 0) {
+                        Log("Found Bluetooth devices", devices);
+                    } else {
+                        Log("No Bluetooth devices found");
+                    }
+                }
+            });
+
+        }, 1000);
     },
 
     connect: function(address) {
