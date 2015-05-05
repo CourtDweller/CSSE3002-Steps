@@ -1,13 +1,4 @@
 {
-    "com.megster.cordova.bluetoothserial": {
-        "source": {
-            "type": "git",
-            "url": "https://github.com/don/BluetoothSerial.git",
-            "subdir": "."
-        },
-        "is_top_level": true,
-        "variables": {}
-    },
     "cordova-plugin-device": {
         "source": {
             "type": "registry",
@@ -28,6 +19,15 @@
         "source": {
             "type": "registry",
             "id": "cordova-plugin-statusbar"
+        },
+        "is_top_level": true,
+        "variables": {}
+    },
+    "com.randdusing.bluetoothle": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/randdusing/BluetoothLE.git",
+            "subdir": "."
         },
         "is_top_level": true,
         "variables": {}
