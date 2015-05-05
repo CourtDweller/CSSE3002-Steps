@@ -56,29 +56,38 @@ var Bluetooth = {
 
     start: function() {
         Log("Starting the Bluetooth service");
-        bluetoothSerial.isEnabled(function() {
-            Bluetooth.searchDevices();
-        }, function() {
-            console.log("Bluetooth is not enabled");
-            if (device.isAndroid) {
-                console.log("Enabling Bluetooth");
-                bluetoothSerial.enable(Bluetooth.searchDevices);
-            } else if (device.isIos) {
-                alert("Please enable Bluetooth!");
+        bluetoothle.isEnabled(function(enabled) {
+            if (enabled) {
+                bluetoothle.initialize(Bluetooth.searchDevices, Error);
+            } else {
+                console.log("Bluetooth is not enabled");
+                if (device.isAndroid) {
+                    console.log("Enabling Bluetooth");
+                    bluetoothle.enable(function() {
+                        bluetoothle.initialize(Bluetooth.searchDevices, Error);
+                    });
+                } else if (device.isIos) {
+                    alert("Please enable Bluetooth!");
+                }
             }
+
         });
     },
 
     searchDevices: function() {
         Log("Searching for Bluetooth devices");
         if (device.isAndroid) {
-            bluetoothSerial.discoverUnpaired(Bluetooth.onDevicesFound, Error);
+            //bluetoothle.discoverUnpaired(Bluetooth.onDevicesFound, Error);
+            //bluetoothle.discover(Bluetooth.onDevicesFound, Error);
+            bluetoothle.startScan(Bluetooth.onDevicesFound, Error);
         } else if (device.isIos) {
-            bluetoothSerial.list(Bluetooth.onDevicesFound, Error);
+            //bluetoothle.list(Bluetooth.onDevicesFound, Error);
         }
     },
 
     onDevicesFound: function(devices) {
+        console.log(devices);
+        /*
         if (devices.length == 0) {
             Log("No Bluetooth devices found");
         } else {
@@ -87,13 +96,15 @@ var Bluetooth = {
                 Bluetooth.onDevicesFoundHandler();
             }
         }
+        */
+        setTimeout(bluetoothle.stopScan, 1000);
     },
 
     connect: function(address) {
         Log("Connecting to", address);
-        bluetoothSerial.connect(address, function() {
+        bluetoothle.connect(address, function() {
             console.log("Successfully connected to", address);
-            bluetoothSerial.subscribe('\n', Bluetooth.onReceivedData, Error);
+            bluetoothle.subscribe('\n', Bluetooth.onReceivedData, Error);
         }, Error);
     },
 
