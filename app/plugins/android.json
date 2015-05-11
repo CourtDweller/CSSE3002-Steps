@@ -13,19 +13,18 @@
                             "count": 1
                         },
                         {
+                            "xml": "<feature name=\"BluetoothLePlugin\"><param name=\"android-package\" value=\"com.randdusing.bluetoothle.BluetoothLePlugin\" /></feature>",
+                            "count": 1
+                        },
+                        {
                             "xml": "<feature name=\"Device\"><param name=\"android-package\" value=\"org.apache.cordova.device.Device\" /></feature>",
                             "count": 1
                         },
                         {
                             "xml": "<feature name=\"StatusBar\"><param name=\"android-package\" value=\"org.apache.cordova.statusbar.StatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
-                        },
-                        {
-                            "xml": "<feature name=\"BluetoothLePlugin\"><param name=\"android-package\" value=\"com.randdusing.bluetoothle.BluetoothLePlugin\" /></feature>",
-                            "count": 1
                         }
-                    ],
-                    "/widget": []
+                    ]
                 }
             },
             "AndroidManifest.xml": {
@@ -48,16 +47,13 @@
         "com.ionic.keyboard": {
             "PACKAGE_NAME": "com.doublestep.app"
         },
+        "com.randdusing.bluetoothle": {
+            "PACKAGE_NAME": "com.doublestep.app"
+        },
         "cordova-plugin-device": {
             "PACKAGE_NAME": "com.doublestep.app"
         },
         "cordova-plugin-statusbar": {
-            "PACKAGE_NAME": "com.doublestep.app"
-        },
-        "org.apache.cordova.console": {
-            "PACKAGE_NAME": "com.doublestep.app"
-        },
-        "com.randdusing.bluetoothle": {
             "PACKAGE_NAME": "com.doublestep.app"
         }
     },

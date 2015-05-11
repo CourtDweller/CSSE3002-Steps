@@ -1,0 +1,7 @@
+<ion-view view-title="Doublestep">
+	<ion-content has-bouncing="true" padding="false">
+		<ul class="list">
+			<li class="item" ng-repeat="message in messages.slice().reverse() track by $index">{{message}}</li>
+		</ul>
+	</ion-content>
+</ion-view>
