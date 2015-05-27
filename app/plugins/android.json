@@ -23,6 +23,14 @@
                         {
                             "xml": "<feature name=\"StatusBar\"><param name=\"android-package\" value=\"org.apache.cordova.statusbar.StatusBar\" /><param name=\"onload\" value=\"true\" /></feature>",
                             "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"PhoneCallTrap\"><param name=\"android-package\" value=\"io.gvox.phonecalltrap.PhoneCallTrap\" /></feature>",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<feature name=\"PhoneAttendant\"><param name=\"android-package\" value=\"co.mylonas.cordova.phoneattendant.PhoneAttendant\" /></feature>",
+                            "count": 1
                         }
                     ]
                 }
@@ -36,6 +44,20 @@
                         },
                         {
                             "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />",
+                            "count": 1
+                        }
+                    ],
+                    "/*": [
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\" />",
+                            "count": 2
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.PROCESS_OUTGOING_CALLS\" />",
+                            "count": 1
+                        },
+                        {
+                            "xml": "<uses-permission android:name=\"android.permission.CALL_PHONE\" />",
                             "count": 1
                         }
                     ]
@@ -54,6 +76,12 @@
             "PACKAGE_NAME": "com.doublestep.app"
         },
         "cordova-plugin-statusbar": {
+            "PACKAGE_NAME": "com.doublestep.app"
+        },
+        "io.gvox.plugin.phonecalltrap": {
+            "PACKAGE_NAME": "com.doublestep.app"
+        },
+        "co.mylonas.cordova.phone-attendant": {
             "PACKAGE_NAME": "com.doublestep.app"
         }
     },

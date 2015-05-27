@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="co.mylonas.cordova.phone-attendant"
+		version="0.1.1">
+    <name>Phone Attendant</name>
+    <description>Phone Attendant</description>
+
+    <js-module src="www/PhoneAttendant.js" name="PhoneAttendant">
+        <clobbers target="PhoneAttendant" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="PhoneAttendant">
+                <param name="android-package" value="co.mylonas.cordova.phoneattendant.PhoneAttendant" />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+			<uses-permission android:name="android.permission.CALL_PHONE" />
+        </config-file>
+
+        <source-file src="src/PhoneAttendant.java" target-dir="src/co/mylonas/cordova/phoneattendant" />
+     </platform>
+</plugin>

@@ -57,9 +57,38 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
         // start the bluetooth communication
     	Bluetooth.start();
     	Bluetooth.onReceivedDataHandler = function(value) {
-    		$scope.messages.push(value);
-    		$scope.$apply();
+    		//$scope.messages.push(value);
+    		//$scope.$apply();
+			$scope.messages[0] = value;
+			$scope.$apply();
     	};
+		
+		PhoneCallTrap.onCall(function(state) {
+			console.log("CHANGE STATE: " + state);
+			
+			switch (state) {
+				case "RINGING":
+					console.log("Phone is ringing");
+					
+					// TODO: Detect foot tap. For now, just set a timer
+					setTimeout(function() {
+						PhoneAttendant.declineCall(function(success) {
+							console.log("success");
+						}, function(error) {
+							console.error(error);
+						});
+					}, 3000);
+					
+					break;
+				case "OFFHOOK":
+					console.log("Phone is off-hook");
+					break;
+				
+				case "IDLE":
+					console.log("Phone is idle");
+					break;
+			}
+		});
     });
 });
 

@@ -1,0 +1,18 @@
+{
+    "version": "0.1.0",
+    "name": "io.gvox.plugin.phonecalltrap",
+    "cordova_name": "PhoneCallTrap",
+    "description": "A phone call trap",
+    "license": "MIT",
+    "keywords": [
+        "phonegap",
+        "calendar",
+        " phone",
+        " call",
+        " phone-call"
+    ],
+    "platforms": [
+        "android"
+    ],
+    "engines": []
+}

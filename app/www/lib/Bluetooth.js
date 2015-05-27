@@ -48,7 +48,7 @@ var Bluetooth = {
 		}
 
 		for (var i = 0; i<devices.length; i++) {
-			console.log("Found device: ", devices[i]);
+			//console.log("Found device: ", devices[i]);
 
 			if (devices[i].name == "BLE UART") {
 				bluetoothle.stopScan();
@@ -104,7 +104,7 @@ var Bluetooth = {
 	onReceivedData: function(data) {
         if (data.status == "subscribedResult") {
             var value = atob(data.value).trim();
-            console.log("Received data: ", value);
+            //console.log("Received data: ", value);
             if (typeof Bluetooth.onReceivedDataHandler == "function") {
                 Bluetooth.onReceivedDataHandler(value);
             }
