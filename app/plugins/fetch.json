@@ -47,5 +47,13 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "co.mylonas.cordova.media-controller": {
+        "source": {
+            "type": "local",
+            "path": "..\\plugins\\MediaController"
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

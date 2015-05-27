@@ -61,6 +61,13 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	var checkTap = false;
 
     $ionicPlatform.ready(function() {
+			
+		MediaController.control("next", function(success) {
+			console.log("success", success);
+			}, function(error) {
+			console.error(error);
+		});
+			
         // start the bluetooth communication
     	Bluetooth.start();
     	Bluetooth.onReceivedDataHandler = function(value) {

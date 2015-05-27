@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="co.mylonas.cordova.media-controller"
+		version="0.0.1">
+    <name>Media Controller</name>
+    <description>Media Controller</description>
+
+    <js-module src="www/MediaController.js" name="MediaController">
+        <clobbers target="MediaController" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="MediaController">
+                <param name="android-package" value="co.mylonas.cordova.mediacontroller.MediaController" />
+            </feature>
+        </config-file>
+
+		<!--
+        <config-file target="AndroidManifest.xml" parent="/*">
+            
+        </config-file>
+		-->
+		
+        <source-file src="src/MediaController.java" target-dir="src/co/mylonas/cordova/mediacontroller" />
+     </platform>
+</plugin>
