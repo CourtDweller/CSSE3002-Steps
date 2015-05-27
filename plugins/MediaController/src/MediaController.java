@@ -8,33 +8,38 @@ import android.content.Intent;
 import android.view.KeyEvent;
 import org.json.JSONException;
 import org.json.JSONArray;
-
+import java.util.Hashtable;
 import java.util.logging.Logger;
 
 
 public class MediaController extends CordovaPlugin {
 	
 	private final Logger log = Logger.getLogger( this.getClass().getName() );
+	private final Hashtable<String, int> methods = new Hashtable<String, int>() {{
+		put("next", KeyEvent.KEYCODE_MEDIA_NEXT);
+		put("previous", KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+		put("pause", KeyEvent.KEYCODE_MEDIA_PAUSE);
+		put("play", KeyEvent.KEYCODE_MEDIA_PLAY);
+		put("stop", KeyEvent.KEYCODE_MEDIA_STOP);
+		put("rewind", KeyEvent.KEYCODE_MEDIA_REWIND);
+		put("fastforward", KeyEvent.KEYCODE_MEDIA_FAST_FORWARD);
+	}}
 	
 	public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         log.info("Executing action: " + action);
 		
-		if (action.equals("next")) {
-			callbackContext.sendPluginResult(controlMedia("next"));
-			return true;
-		}
-		
-		callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.ERROR, "Invalid action"));
-        return false;
+		callbackContext.sendPluginResult(controlMedia(action));
+		return true;
     }
 	
 	public PluginResult controlMedia(String method) {
 		try {
 			Intent i = new Intent(Intent.ACTION_MEDIA_BUTTON);
+			
 			synchronized (this) {
-				i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_MEDIA_NEXT));
+				i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_DOWN, methods[method]));
 				this.cordova.getActivity().getApplicationContext().sendOrderedBroadcast(i, null);
-				i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_MEDIA_NEXT));
+				i.putExtra(Intent.EXTRA_KEY_EVENT, new KeyEvent(KeyEvent.ACTION_UP, methods[method]));
 				this.cordova.getActivity().getApplicationContext().sendOrderedBroadcast(i, null);
 			 }
 		} catch (Exception ex) {
