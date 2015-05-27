@@ -64,38 +64,38 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
         // start the bluetooth communication
     	Bluetooth.start();
     	Bluetooth.onReceivedDataHandler = function(value) {
-		if(checkTap) {
-			if(value > rangeHigh) {
-				$scope.messages.push("Tap");
-				$scope.apply();
-				//Didn't add this one to readings array
-			}
-			checkTap = false;
-		} else {
-		if(readings.length < numReadings) {
-			readings.push(value);
-		} else {
-			
-			for (var i = 0; i < (numReadings-1); i++) {
-				if (rangeHigh < readings[i] + buffer) {
-					rangeHigh = readings[i] + buffer;
+			if(checkTap) {
+				if(value > rangeHigh) {
+					$scope.messages.push("Tap");
+					$scope.apply();
+					//Didn't add this one to readings array
 				}
-				if (rangeLow > readings[i] - buffer) {
-					rangeLow = readings[i] - buffer;
+				checkTap = false;
+			} else {
+				if(readings.length < numReadings) {
+					readings.push(value);
+				} else {
+					
+					for (var i = 0; i < (numReadings-1); i++) {
+						if (rangeHigh < readings[i] + buffer) {
+							rangeHigh = readings[i] + buffer;
+						}
+						if (rangeLow > readings[i] - buffer) {
+							rangeLow = readings[i] - buffer;
+						}
+						readings[i] = readings[i+1];
+						
+					}
+					readings[numReadings-1] = value;
 				}
-				readings[i] = readings[i+1];
+				if(value > rangeHigh) {
+					checkTap = true;
+				}
 				
+				$scope.messages.push("NoTap: " + value);
+				$scope.apply();
 			}
-			readings[numReadings-1] = value;
-		}
-		if(value > rangeHigh) {
-			checkTap = true;
-		}
-		
-		$scope.messages.push("NoTap: " + value);
-		$scope.apply();
-		}
-		//$scope.messages.push(value);
+			//$scope.messages.push(value);
     		//$scope.$apply();
     	};
 		
