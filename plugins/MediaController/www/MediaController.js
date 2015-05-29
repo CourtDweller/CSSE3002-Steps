@@ -19,14 +19,6 @@ module.exports = {
 		this.control("stop", successCallback, errorCallback);
 	},
 	
-	rewind: function(successCallback, errorCallback) {
-		this.control("rewind", successCallback, errorCallback);
-	},
-	
-	fastforward: function(successCallback, errorCallback) {
-		this.control("fastforward", successCallback, errorCallback);
-	},
-	
 	control: function(action, successCallback, errorCallback) {
 		errorCallback = errorCallback || this.errorCallback;
         cordova.exec(successCallback, errorCallback, 'MediaController', action, []);

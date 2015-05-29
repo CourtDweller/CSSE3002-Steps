@@ -53,45 +53,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
 	
-	/*
-		MediaController.stop();
-		MediaController.next();
-		MediaController.previous();
-		MediaController.pause();
-		MediaController.play();
-		MediaController.rewind();
-		MediaController.fastforward();
-	 */
-	
-	/*
-	PhoneCallTrap.onCall(function(state) {
-		console.log("CHANGE STATE: " + state);
-		
-		switch (state) {
-			case "RINGING":
-			console.log("Phone is ringing");
-			
-			// TODO: Detect foot tap. For now, just set a timer
-			setTimeout(function() {
-				PhoneAttendant.declineCall(function(success) {
-					console.log("success");
-					}, function(error) {
-					console.error(error);
-				});
-			}, 3000);
-			
-			break;
-			case "OFFHOOK":
-			console.log("Phone is off-hook");
-			break;
-			
-			case "IDLE":
-			console.log("Phone is idle");
-			break;
-		}
-	});
-	*/
-	
 	$scope.messages = [];
     var readings = [];
     var rangeHigh = 0;
@@ -114,6 +75,44 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
     var doubleTapTime = 0;
 	
     $ionicPlatform.ready(function() {
+	
+		/*
+		MediaController.stop();
+		MediaController.next();
+		MediaController.previous();
+		MediaController.pause();
+		MediaController.play();
+		*/
+
+		/*
+		PhoneCallTrap.onCall(function(state) {
+		console.log("CHANGE STATE: " + state);
+		
+		switch (state) {
+		case "RINGING":
+		console.log("Phone is ringing");
+		
+		// TODO: Detect foot tap. For now, just set a timer
+		setTimeout(function() {
+		PhoneAttendant.declineCall(function(success) {
+		console.log("success");
+		}, function(error) {
+		console.error(error);
+		});
+		}, 3000);
+		
+		break;
+		case "OFFHOOK":
+		console.log("Phone is off-hook");
+		break;
+		
+		case "IDLE":
+		console.log("Phone is idle");
+		break;
+		}
+		});
+		*/
+			
         // start the bluetooth communication
         Bluetooth.start();
         Bluetooth.onReceivedDataHandler = function(value) {
