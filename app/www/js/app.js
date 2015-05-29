@@ -64,9 +64,37 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	
 		DoublestepSdk.init();
 		
+		// assuming balance mode
+		var readings = [];
+		var balanceAvg = null;
+		var lastReading = null;
+		
 		DoublestepSdk.bind("ReceivedReading", function(value) {
 			//console.log("RECEIVED READING: "+value);
+			if (readings.length == 0) {
+				setTimeout(function() {
+					var avg = 0;
+					for (var i=0; i<readings.length; i++) {
+						avg += i<rreadings[i];
+					}
+					balanceAvg = avg/readings.length;
+				}, 2000);
+			}
+			lastReading = value;
+			
+			if (balanceAvg == null) {
+				readings.push(value);
+			} else {
+				if (value > balanceAvg*1.2 || value < balanceAvg*.8) {
+					alert("you suck");
+				} else {
+					$scope.balancePercentage = 100*value/1023;
+					//$scope.balancePercentage = 100*value/balanceAvg;
+					$scope.$apply();
+				}
+			}
 		});
+		
 		
 		DoublestepSdk.bind("FrontTap", function() {
 			$scope.messages.push("FRONT TAP");
