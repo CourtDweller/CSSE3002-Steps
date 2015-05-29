@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="co.mylonas.cordova.alarm-clock"
+		version="0.1.1">
+    <name>Alarm Clock</name>
+    <description>Alarm Clock</description>
+
+    <js-module src="www/AlarmClock.js" name="AlarmClock">
+        <clobbers target="AlarmClock" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="AlarmClock">
+                <param name="android-package" value="co.mylonas.cordova.alarmclock.AlarmClock" />
+            </feature>
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="/*">
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+        </config-file>
+		
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<service android:name=".AlarmService" android:enabled="true" />
+			<receiver android:name=".AlarmReceiver" />
+		</config-file>
+
+        <source-file src="src/AlarmClock.java" target-dir="src/co/mylonas/cordova/alarmclock" />
+		<source-file src="src/AlarmReceiver.java" target-dir="src/co/mylonas/cordova/alarmclock" />
+		<source-file src="src/AlarmService.java" target-dir="src/co/mylonas/cordova/alarmclock" />
+     </platform>
+</plugin>

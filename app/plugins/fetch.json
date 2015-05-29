@@ -55,5 +55,14 @@
         },
         "is_top_level": true,
         "variables": {}
+    },
+    "android.support.v4": {
+        "source": {
+            "type": "git",
+            "url": "https://github.com/MobileChromeApps/cordova-plugin-android-support-v4.git",
+            "subdir": "."
+        },
+        "is_top_level": true,
+        "variables": {}
     }
 }

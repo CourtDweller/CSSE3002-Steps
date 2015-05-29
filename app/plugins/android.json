@@ -64,7 +64,8 @@
                             "xml": "<uses-permission android:name=\"android.permission.BLUETOOTH_ADMIN\" />",
                             "count": 1
                         }
-                    ]
+                    ],
+                    "/manifest/application": []
                 }
             }
         }
@@ -89,6 +90,9 @@
             "PACKAGE_NAME": "com.doublestep.app"
         },
         "co.mylonas.cordova.media-controller": {
+            "PACKAGE_NAME": "com.doublestep.app"
+        },
+        "android.support.v4": {
             "PACKAGE_NAME": "com.doublestep.app"
         }
     },
