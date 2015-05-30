@@ -1,1 +1,103 @@
-/* Empty. Add your own CSS if you like */
+#background {
+	height:700px;
+	background: linear-gradient(to bottom, #393948, #eaeaec); 
+	text-align:center;
+}
+
+.title{
+	height:15%;
+	width:75%;
+	margin: 30px 0px 15px 45px;
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+}
+
+p{
+	font-family:"Myriad Pro";
+	font-size:18pt;
+	text-shadow:1px 1px black;
+	padding: 0 40px;
+	color: white;
+	margin-bottom: 1em;
+}
+
+.homeButton {
+    background: linear-gradient(to bottom, #a50b0b, #d31414);
+    color: white;
+    border-radius: 10px;
+    width: 175px;
+    font-size:26px;
+	height:60px;
+}
+
+.mainButton {
+    background: linear-gradient(to bottom, #a50b0b, #d31414);
+    color: white;
+    border-radius: 10px;
+    width: 175px;
+    font-size:26px;
+	height:60px;
+}
+
+td {
+    vertical-align: middle;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+#about{
+	margin-top:4em;
+	width:100%;
+	text-align:center;
+}
+
+.centredTable {
+    top: 50px;
+    margin: 0px auto;
+}
+
+/* Individual image styling */
+
+#doublestepImg{
+	height:12%;
+	width:75%;
+	margin: 30px 0 30px 0;
+}
+
+#balanceCheckImg{
+	height:6%;
+	width:80%;
+	margin: 30px 0 5px 0;
+}
+
+#yogaImg{
+	height:325px;
+	width:285px;
+}
+
+.functionTable {
+    top: 50px;
+    position: absolute;
+    margin: 0px auto;
+}
+
+.featureImage {
+    margin-top: 30px;
+    margin-bottom: 30px;
+    width: 150px;
+    height: 150px;
+}
+
+#musicImage {
+    margin-left: -20px;
+}
+
+.onOffButton {
+    margin: 0px auto;
+    width: 30%;
+}
