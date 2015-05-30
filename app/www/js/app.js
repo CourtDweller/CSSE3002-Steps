@@ -299,25 +299,3 @@ function pad(num, size) {
 	while (s.length < size) s = "0" + s;
 	return s;
 }
-
-
-function Log() {
-	if (typeof arguments[0] == "string") {
-		ionicNavBarDelegate.title(arguments[0]);
-	}
-	var log = "console.log(";
-	for (var i=0; i<arguments.length; i++) {
-		log += "arguments["+i+"], ";
-	}
-	log = log.substring(0, log.length-2) + ")";
-	eval(log);
-}
-
-function Error() {
-	var error = "console.error(";
-	for (var i=0; i<arguments.length; i++) {
-		error += "arguments["+i+"], ";
-	}
-	error = error.substring(0, error.length-2) + ")";
-	eval(error);
-}

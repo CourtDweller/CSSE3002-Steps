@@ -23,7 +23,7 @@ var frontTapNeedsLogging = false;
 var backTapNeedsLogging = false;
 
 var DoublestepSdk = {
-	
+
 	eventHandlers: {
 		ReceivedReading: null,
 		FrontTap: null,
@@ -31,7 +31,7 @@ var DoublestepSdk = {
 		DoubleFrontTap: null,
 		DoubleBackTap: null
 	},
-	
+
 	bind: function(event, callback) {
 		if (typeof DoublestepSdk.eventHandlers[event] == "undefined") {
 			console.error("This is not a valid event handler");
@@ -39,7 +39,7 @@ var DoublestepSdk = {
 			DoublestepSdk.eventHandlers[event] = callback;
 		}
 	},
-	
+
 	unbind: function(event) {
 		if (typeof DoublestepSdk.eventHandlers[event] == "undefined") {
 			console.error("This is not a valid event handler");
@@ -47,54 +47,53 @@ var DoublestepSdk = {
 			DoublestepSdk.eventHandlers[event] = null;
 		}
 	},
-	
+
 	unbindAll: function() {
 		for (var i in DoublestepSdk.eventHandlers) {
 			DoublestepSdk.eventHandlers[i] = null;
 		}
 	},
-	
+
 	execEventHandler: function(event, param) {
 		if (typeof DoublestepSdk.eventHandlers[event] == "function") {
 			DoublestepSdk.eventHandlers[event](param);
 		}
 	},
-	
+
 	init: function() {
-		Bluetooth.start();
-        Bluetooth.onReceivedDataHandler = DoublestepSdk.onReceivedReading;
+		DoublestepSdk.bluetooth.start();
 	},
-	
+
 	onReceivedReading: function(value) {
 		value = parseInt(value);
-		
+
 		date = new Date();
-                time = date.getTime();
-                if((time - backTapTime) > breakTime && 
-                        backTapNeedsLogging) {
-                    DoublestepSdk.execEventHandler("BackTap");
-                    backTapNeedsLgging = false;
-                }
-                if((time - frontTapTime) > breakTime && 
-                        frontTapNeedsLogging) {
-                    DoublestepSdk.execEventHandler("FrontTap");
-                    frontTapNeedsLogging = false;
-                }
+				time = date.getTime();
+				if((time - backTapTime) > breakTime &&
+						backTapNeedsLogging) {
+					DoublestepSdk.execEventHandler("BackTap");
+					backTapNeedsLgging = false;
+				}
+				if((time - frontTapTime) > breakTime &&
+						frontTapNeedsLogging) {
+					DoublestepSdk.execEventHandler("FrontTap");
+					frontTapNeedsLogging = false;
+				}
 		if(readings.length < numReadings) {
 			readings.push(value);
 			console.log("getting initial num readings: " + readings.length);
-		} else { 
+		} else {
 			if(checkFrontTap) {
 				//console.log("checkTap true")
 				if(value > rangeHigh) {
 					frontTapValue = value;
 					if((date.getTime() - frontTapTime) < breakTime) {
 						DoublestepSdk.execEventHandler("DoubleFrontTap");
-                                                doubleFrontTime = time;
-                                                frontTapNeedsLogging = false;
+												doubleFrontTime = time;
+												frontTapNeedsLogging = false;
 					} else {
-                                                frontTapNeedsLogging = true;
-                                        }
+												frontTapNeedsLogging = true;
+										}
 					frontTapTime = time;
 					//$scope.messages.push("Heel tap: " + frontTapTime + " Val: " + frontTapValue);
 					//$scope.$apply();
@@ -110,11 +109,11 @@ var DoublestepSdk = {
 					backTapValue = value;
 					if((date.getTime() - backTapTime) < breakTime) {
 						DoublestepSdk.execEventHandler("DoubleBackTap");
-                                                doubleBackTime = time;
-                                                backTapNeedsLogging = false;
+												doubleBackTime = time;
+												backTapNeedsLogging = false;
 					} else {
-                                                backTapNeedsLogging = true;
-                                        }
+												backTapNeedsLogging = true;
+										}
 					backTapTime = time;
 					//$scope.messages.push("Toe tap: " + backTapTime + " Val: " + backTapValue);
 					//$scope.$apply();
@@ -145,7 +144,7 @@ var DoublestepSdk = {
 					if (rangeLow > parseInt(readings[i]) - buffer) {
 						rangeLow = Math.max(parseInt(readings[i]) - buffer, minPressure);
 						//console.log("range Low: " + rangeLow + " i is: " + i);
-						
+
 					}
 					readings[i] = readings[i+1];
 				}
@@ -165,39 +164,123 @@ var DoublestepSdk = {
 				}
 			}
 		}
-		
+
 		DoublestepSdk.execEventHandler('ReceivedReading', value);
 	},
-	
+
+	bluetooth : {
+		options: {
+			connectTo: null,
+			autoconnect: true
+		},
+
+		start: function() {
+			if (!device.isAndroid && !device.isIos) {
+				console.error("Bluetooth cannot run on this platform");
+				return;
+			}
+			console.log("Starting the Bluetooth service");
+			bluetoothle.isEnabled(function(enabled) {
+				if (enabled) {
+					bluetoothle.initialize(DoublestepSdk.bluetooth.connectOrSearch, console.error);
+				} else {
+					console.log("Bluetooth is not enabled - attempting to enable");
+					bluetoothle.enable(function() {
+						bluetoothle.initialize(DoublestepSdk.bluetooth.connectOrSearch, console.error);
+					});
+				}
+
+			});
+		},
+
+		connectOrSearch: function() {
+			if (DoublestepSdk.bluetooth.options.connectTo === null) {
+				console.log("Searching for Bluetooth devices");
+				bluetoothle.startScan(DoublestepSdk.bluetooth.onDeviceScan, console.error);
+			} else {
+				DoublestepSdk.bluetooth.connect(DoublestepSdk.bluetooth.options.connectTo, function() {
+					console.error("Could not connect to the specified bluetooth device address.");
+				});
+			}
+		},
+
+		onDeviceScan: function(devices) {
+			if (devices.status != "scanResult") { return; }
+			if (typeof devices == "object" && typeof devices.address != "undefined") {
+				devices = [devices];
+			}
+			for (var i = 0; i<devices.length; i++) {
+				if (devices[i].name == "BLE UART") {
+					if (DoublestepSdk.bluetooth.options.autoconnect) {
+						bluetoothle.stopScan();
+					}
+					DoublestepSdk.bluetooth.onFoundBleUart(devices[i]);
+				}
+			}
+		},
+
+		onFoundBleUart: function(device, autoconnect) {
+			console.log("Found BLE UART: ", device);
+			if (DoublestepSdk.bluetooth.options.autoconnect) {
+				console.log("Inititiating connection...");
+				DoublestepSdk.bluetooth.connect(device.address);
+			}
+			DoublestepSdk.execEventHandler("FoundBleDoublestep", device);
+		},
+
+		connect: function(address, errorCallback) {
+			console.log("Connecting to " + address);
+			bluetoothle.connect(function() {
+				console.log("Successfully connected to", address);
+				bluetoothle.discover(function(services) {
+					console.log("Discovered services: ", services);
+					console.log("Listening to " + address);
+					bluetoothle.subscribe(DoublestepSdk.bluetooth.onReceivedData, console.error, {
+						"address": address,
+						serviceUuid:		"6e400001-b5a3-f393-e0a9-e50e24dcca9e",
+						characteristicUuid: "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
+						isNotification: true
+					});
+				}, console.error, { address: address });
+			}, (typeof errorCallback == "function" ? errorCallback : console.error), { address: address });
+		},
+
+		onReceivedData: function(data) {
+			if (data.status == "subscribedResult") {
+				DoublestepSdk.onReceivedReading(atob(data.value).trim());
+			}
+		}
+	},
+
 	simulate: {
 		randomDataTimer: null,
 		variedDataTimer: null,
-		
+
 		receivedReading: function(value) {
 			DoublestepSdk.execEventHandler('ReceivedReading', value);
 		},
-		
+
 		frontTap: function() {
 			DoublestepSdk.execEventHandler('FrontTap');
 		},
-		
+
 		backTap: function() {
 			DoublestepSdk.execEventHandler('BackTap');
 		},
-		
+
 		doubleFrontTap: function() {
 			DoublestepSdk.execEventHandler('DoubleFrontTap');
 		},
-		
+
 		doubleBackTap: function() {
 			DoublestepSdk.execEventHandler('DoubleBackTap');
 		},
-		
+
 		startRandomData: function(min, max) {
-			if (typeof min == "undefined" || min == null) {
+			if (typeof min == "undefined" || min === null) {
 				min = 0;
 			}
-			if (typeof max == "undefined" || max == null) {
+			if (typeof max == "undefined" || max === null) {
 				max = 1023;
 			}
 			DoublestepSdk.simulate.randomDataTimer = setInterval(function() {
@@ -206,13 +289,13 @@ var DoublestepSdk = {
 				DoublestepSdk.onReceivedReading(value);
 			}, 100);
 		},
-		
+
 		startVariedData(value, variation) {
-			if (typeof value == "undefined" || value == null) {
+			if (typeof value == "undefined" || value === null) {
 				value = 500;
 			}
-			if (typeof variation == "undefined" || variation == null) {
-				variation = 5; //percent 
+			if (typeof variation == "undefined" || variation === null) {
+				variation = 5; //percent
 			}
 			DoublestepSdk.simulate.variedDataTimer = setInterval(function() {
 				var v = value * (1+((Math.floor(Math.random() * variation * 2) - variation) / 100));
@@ -220,11 +303,10 @@ var DoublestepSdk = {
 				DoublestepSdk.onReceivedReading(v);
 			}, 100);
 		},
-		
+
 		stop: function() {
 			clearInterval(DoublestepSdk.simulate.randomDataTimer);
 			clearInterval(DoublestepSdk.simulate.variedDataTimer);
 		}
-		
 	}
-}
+};
