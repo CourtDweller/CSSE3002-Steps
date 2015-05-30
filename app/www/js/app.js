@@ -118,22 +118,34 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 	$scope.startAlarm = function() {
 		$scope.alarm.started = true;
-		alarmTimer = setInterval(function() {
+		$scope.$apply();
+		alarmTimer = setInterval(alarmTick, 5000);
+		alarmTick();
+		function alarmTick() {
 			var now = new Date().valueOf();
 			var alarm = $scope.alarm.time.valueOf();
 			var difference = alarm - now;
-			console.log(now, alarm, difference);
-
-
-		}, 5000);
-
-		$scope.playAlarmSound();
+			if (difference <= 0) {
+				$scope.alarm.timeToGo = -1;
+				$scope.playAlarmSound();
+				$scope.$apply();
+				clearInterval(alarmTimer);
+			} else {
+				difference = difference / 1000 / 60 / 60;
+				var hours = Math.floor(difference);
+				var mins = Math.ceil((difference-hours)*60);
+				$scope.alarm.timeToGo = hours + ":" + pad(mins, 2);
+				$scope.$apply();
+			}
+		}
 	};
 
 	$scope.stopAlarm = function() {
 		if (alarmSound === null) {
 			// alarm is not going off, so we can stop
-			$scope.alart.started = false;
+			clearInterval(alarmTimer);
+			$scope.alarm.started = false;
+			$scope.$apply();
 		} else {
 			console.log("don't stop the alarm");
 		}

@@ -266,3 +266,11 @@ p.clock {
 	text-align: center;
 	text-transform: lowercase;
 }
+
+#stopColour.disabled {
+	background: gray;
+}
+
+.center {
+	text-align: center;
+}

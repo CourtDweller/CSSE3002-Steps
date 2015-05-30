@@ -2,8 +2,8 @@
 	<ion-content has-bouncing="true" padding="true">
 		<img src="img/alarm.png" class="featureImage"></img>
 		<p ng-if="alarm.time !== null" class="clock" ng-bind="alarm.time | date:'shortTime'"></p>
-		<p ng-if="alarm.timeToGo !== null">Time until alarm: {{alarm.timeToGo}}</p>
+		<p ng-if="alarm.timeToGo !== null && alert.timeToGo !== -1" class="center">Time until alarm: {{alarm.timeToGo}}</p>
 		<button ng-click="setTime()" ng-hide="alarm.started" class="mainButton">Set Alarm</button>
-		<button ng-click="stopAlarm()" ng-show="alarm.stated" class="mainButton" id="stopColour">Stop Alarm</button>
+		<button ng-click="stopAlarm()" ng-show="alarm.started" class="mainButton" id="stopColour" ng-class="{disabled: alarm.started && alarm.timeToGo === -1}">Stop Alarm</button>
 	</ion-content>
 </ion-view>
