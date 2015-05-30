@@ -82,6 +82,12 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
                 url: "/mediaPlayer",
                 templateUrl: "views/mediaPlayer.html"
         });
+
+
+        $stateProvider.state('bluetooth', {
+                url: "/bluetooth",
+                templateUrl: "views/bluetooth.html"
+        });
 	
 	
 
