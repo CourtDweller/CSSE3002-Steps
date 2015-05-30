@@ -45,56 +45,56 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		url: "/ble",
 		controller: 'BleCtrl',
 		templateUrl: "views/ble.html"
-	})
-	
+	});
+
 	$stateProvider.state('kelly', {
 		url: "/kelly",
 		templateUrl: "views/kelly.html"
-	})
+	});
 
 	$stateProvider.state('functions', {
 		url: "/functions",
 		templateUrl: "views/functions.html"
-	})
-	
+	});
+
 	$stateProvider.state('doublestep', {
 		url: "/doublestep",
 		templateUrl: "views/doublestep.html"
-	})
+	});
 
-        $stateProvider.state('calls', {
-                url: "/calls",
-                templateUrl: "views/calls.html"
-        })
-	
+	$stateProvider.state('calls', {
+			url: "/calls",
+			templateUrl: "views/calls.html"
+	});
+
 	$stateProvider.state('balanceWarmup', {
 		url: "/balanceWarmup",
 		templateUrl: "views/balanceWarmup.html"
-	})
-	
+	});
+
 	$stateProvider.state('balance', {
 		url: "/balance",
 		templateUrl: "views/balance.html"
-	})
-	
+	});
+
 	$stateProvider.state('alarm', {
 		url: "/alarm",
 		controller: 'AlarmCtrl',
 		templateUrl: "views/alarm.html"
 	});
 
-        $stateProvider.state('mediaPlayer', {
-                url: "/mediaPlayer",
-                templateUrl: "views/mediaPlayer.html"
-        });
+		$stateProvider.state('mediaPlayer', {
+				url: "/mediaPlayer",
+				templateUrl: "views/mediaPlayer.html"
+		});
 
 
-        $stateProvider.state('bluetooth', {
-                url: "/bluetooth",
-                templateUrl: "views/bluetooth.html"
-        });
-	
-	
+		$stateProvider.state('bluetooth', {
+				url: "/bluetooth",
+				templateUrl: "views/bluetooth.html"
+		});
+
+
 
 	$urlRouterProvider.otherwise('/ble');
 })
@@ -182,26 +182,28 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	};
 
 	$ionicPlatform.ready(function() {
-		$scope.setTime();
+		if (window.TimePicker) {
+			$scope.setTime();
+		}
 	});
 })
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
-	
+
 	$scope.messages = [];
-	
-    $ionicPlatform.ready(function() {
-	
+
+	$ionicPlatform.ready(function() {
+
 		DoublestepSdk.init();
-		
+
 		// assuming balance mode
 		var readings = [];
 		var balanceAvg = null;
 		var lastReading = null;
-		
+
 		DoublestepSdk.bind("ReceivedReading", function(value) {
 			//console.log("RECEIVED READING: "+value);
-			if (readings.length == 0) {
+			if (readings.length === 0) {
 				setTimeout(function() {
 					var avg = 0;
 					for (var i=0; i<readings.length; i++) {
@@ -211,11 +213,11 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 				}, 2000);
 			}
 			lastReading = value;
-			
-			if (balanceAvg == null) {
+
+			if (balanceAvg === null) {
 				readings.push(value);
 			} else {
-				if (value > balanceAvg*1.2 || value < balanceAvg*.8) {
+				if (value > balanceAvg*1.2 || value < balanceAvg*0.8) {
 					alert("you suck");
 				} else {
 					$scope.balancePercentage = 100*value/1023;
@@ -224,30 +226,30 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 				}
 			}
 		});
-		
-		
+
+
 		DoublestepSdk.bind("FrontTap", function() {
 			$scope.messages.push("FRONT TAP");
 			$scope.$apply();
 		});
-		
+
 		DoublestepSdk.bind("BackTap", function() {
 			$scope.messages.push("BACK TAP");
 			$scope.$apply();
 		});
-		
+
 		DoublestepSdk.bind("DoubleFrontTap", function(value) {
 			$scope.messages.push("DOUBLE FRONT TAP");
 			$scope.$apply();
 		});
-		
+
 		DoublestepSdk.bind("DoubleBackTap", function(value) {
 			$scope.messages.push("DOUBLE BACK TAP");
 			$scope.$apply();
 		});
-	
+
 		//AlarmClock.setAlarm(null);
-	
+
 		/*
 		MediaController.stop();
 		MediaController.next();
@@ -259,11 +261,11 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		/*
 		PhoneCallTrap.onCall(function(state) {
 		console.log("CHANGE STATE: " + state);
-		
+
 		switch (state) {
 		case "RINGING":
 		console.log("Phone is ringing");
-		
+
 		// TODO: Detect foot tap. For now, just set a timer
 		setTimeout(function() {
 		PhoneAttendant.declineCall(function(success) {
@@ -272,29 +274,29 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		console.error(error);
 		});
 		}, 3000);
-		
+
 		break;
 		case "OFFHOOK":
 		console.log("Phone is off-hook");
 		break;
-		
+
 		case "IDLE":
 		console.log("Phone is idle");
 		break;
 		}
 		});
 		*/
-			
-        
-    });
+
+
+	});
 });
 
 
 
 function pad(num, size) {
-    var s = num+"";
-    while (s.length < size) s = "0" + s;
-    return s;
+	var s = num+"";
+	while (s.length < size) s = "0" + s;
+	return s;
 }
 
 
