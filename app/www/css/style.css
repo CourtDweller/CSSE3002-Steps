@@ -46,7 +46,12 @@ p{
 	background: linear-gradient(to bottom, #e50b0b, #d31414);
 }
 
+tr {
+    text-align: center;
+}
+
 td {
+    text-align: center;
     vertical-align: middle;
     padding-left: 10px;
     padding-right: 10px;
@@ -63,6 +68,47 @@ td {
 .centredTable {
     top: 50px;
     margin: 0px auto;
+}
+
+#deviceList {
+    width: 100%;
+    margin: 0px auto;
+}
+
+#deviceList td {
+    text-align: center;
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.selected {
+    background-color: #727272;
+} 
+
+.deselected {
+    background-color: #595959;
+}
+
+#deviceListContainer {
+    border: 1px solid black;
+    height: 200px;
+    width: 80%;
+    margin-left: 10%;
+    background-color: #595959;
+}
+
+.deviceTick {
+    width: 25px;
+    height: 25px;
+}
+
+h3 {
+    font-family: "Myriad Pro";
+    color: white;
+    padding-top: 5px;
+    font-size: 20px;
 }
 
 /* Individual image styling */
@@ -132,7 +178,6 @@ td {
 
 .functionTable {
     top: 50px;
-    position: absolute;
     margin: 0px auto;
 }
 
@@ -148,6 +193,10 @@ td {
 }
 
 .onOffButton {
+    padding-top: 20px;
     margin: 0px auto;
-    width: 30%;
+}
+
+.description {
+    padding-top: 20px;
 }

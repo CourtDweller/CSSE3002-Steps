@@ -87,6 +87,12 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
                 url: "/mediaPlayer",
                 templateUrl: "views/mediaPlayer.html"
         });
+
+
+        $stateProvider.state('bluetooth', {
+                url: "/bluetooth",
+                templateUrl: "views/bluetooth.html"
+        });
 	
 	
 
@@ -95,41 +101,89 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 .controller('AlarmCtrl', function($scope, $ionicPlatform) {
 	var alarmTimer = null;
-	$scope.alarm = {time: new Date()};
-	$scope.alarmRunning = false;
-	
-	$scope.timeSet = function() {
-		var time = parseInt($scope.alarm.time.getHours() + "" + pad($scope.alarm.time.getMinutes(), 2));
-		console.log(time);
+
+	$scope.alarm = {
+		time: null,
+		timeToGo: null
 	};
-	
+	$scope.alarmRunning = false;
+
+	$scope.setTime = function() {
+		TimePicker.show(function(time) {
+			var today = new Date();
+			var now = parseInt(today.getHours() + "" + pad(today.getMinutes(), 2));
+			var alarm = parseInt(time.hour + pad(time.minute, 2));
+			var isAlarmTomorrow = 0;
+			if (alarm < now) {
+				// alarm time is less than current time, so set alarm for tomrrow
+				isAlarmTomorrow = 1;
+			}
+			$scope.alarm.time = new Date(today.getFullYear(), today.getMonth(), today.getDate()+isAlarmTomorrow, time.hour, time.minute);
+			$scope.$apply();
+
+		}, function(error) {
+			console.error("error", error);
+		});
+	};
+
 	$scope.startAlarm = function() {
 		$scope.alarmRunning = true;
 		alarmTimer = setInterval(function() {
-			
+
 		}, 5000);
-		
-		$scope.playAlarm();
+
+		$scope.playAlarmSound();
 	};
-	
+
 	$scope.stopAlarm = function() {
-		$scope.alarmRunning = false;
+		if (alarmSound === null) {
+			// alarm is not going off, so we can stop
+			$scope.alarmRunning = false;
+		} else {
+			console.log("don't stop the alarm");
+		}
+
 	};
-	
-	$scope.playAlarm = function() {
-		var my_media = new Media("alarm.mp3",
-        // success callback
-        function () {
-            console.log("playAudio():Audio Success");
-        },
-        // error callback
-        function (err) {
-            console.log("playAudio():Audio Error: " + err);
-        }
+
+	$scope.playAlarmSound = function() {
+		if (alarmSound !== null) {
+			$scope.stopAlarmSound();
+		}
+		alarmSound = new Media("/android_asset/www/alarm.mp3", null, function (err) {
+				var errors = {};
+				errors[MediaError.MEDIA_ERR_ABORTED] = "MEDIA_ERR_ABORTED";
+				errors[MediaError.MEDIA_ERR_NETWORK] = "MEDIA_ERR_NETWORK";
+				errors[MediaError.MEDIA_ERR_DECODE] = "MEDIA_ERR_DECODE";
+				errors[MediaError.MEDIA_ERR_NONE_SUPPORTED] = "MEDIA_ERR_NONE_SUPPORTED";
+				console.error("playAudio():Audio Error: ", errors[err.code]);
+			}
 		);
-		// Play audio
-		my_media.play();
+
+		alarmSound.play();
+		alarmSound.setVolume(1.0);
+		// this timer repeats the alarm tone indefinately
+		var alarmSoundTimer = setInterval(function() {
+			if (alarmSound === null) {
+				clearInterval(alarmSoundTimer);
+			} else {
+				alarmSound.getCurrentPosition(function(position) {
+					if (parseFloat(position) > alarmSound.getDuration() - 2) {
+						alarmSound.seekTo(1000);
+					}
+				});
+			}
+		}, 1000);
 	};
+
+	$scope.stopAlarmSound = function() {
+		alarmSound.stop();
+		alarmSound.release();
+		alarmSound = null;
+	};
+
+	$ionicPlatform.ready(function() {
+		$scope.setTime();
+	});
 })
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
