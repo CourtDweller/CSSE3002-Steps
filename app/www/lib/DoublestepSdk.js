@@ -16,8 +16,11 @@ var tapExpiry = 1000;
 var minPressure = 70;
 var sitPresure = 100;
 var standPressure = 600;
-var doubleTapTime = 0;
-
+var doubleBackTime = -1;
+var doubleFrontTime = -1;
+var time = -1;
+var frontTapNeedsLogging = false;
+var backTapNeedsLogging = false;
 
 var DoublestepSdk = {
 	
@@ -66,6 +69,17 @@ var DoublestepSdk = {
 		value = parseInt(value);
 		
 		date = new Date();
+                time = date.getTime();
+                if((time - backTapTime) > breakTime && 
+                        backTapNeedsLogging) {
+                    DoublestepSdk.execEventHandler("BackTap");
+                    backTapNeedsLgging = false;
+                }
+                if((time - frontTapTime) > breakTime && 
+                        frontTapNeedsLogging) {
+                    DoublestepSdk.execEventHandler("FrontTap");
+                    frontTapNeedsLogging = false;
+                }
 		if(readings.length < numReadings) {
 			readings.push(value);
 			console.log("getting initial num readings: " + readings.length);
@@ -76,11 +90,14 @@ var DoublestepSdk = {
 					frontTapValue = value;
 					if((date.getTime() - frontTapTime) < breakTime) {
 						DoublestepSdk.execEventHandler("DoubleFrontTap");
-					}
-					frontTapTime = date.getTime();
+                                                doubleFrontTime = time;
+                                                frontTapNeedsLogging = false;
+					} else {
+                                                frontTapNeedsLogging = true;
+                                        }
+					frontTapTime = time;
 					//$scope.messages.push("Heel tap: " + frontTapTime + " Val: " + frontTapValue);
 					//$scope.$apply();
-					DoublestepSdk.execEventHandler("FrontTap");
 					//console.log("Should have said Tap");
 					//Didn't add this one to readings array
 				}
@@ -93,25 +110,27 @@ var DoublestepSdk = {
 					backTapValue = value;
 					if((date.getTime() - backTapTime) < breakTime) {
 						DoublestepSdk.execEventHandler("DoubleBackTap");
-						doubleTapTime = date.getTime();
-					}
-					backTapTime = date.getTime();
+                                                doubleBackTime = time;
+                                                backTapNeedsLogging = false;
+					} else {
+                                                backTapNeedsLogging = true;
+                                        }
+					backTapTime = time;
 					//$scope.messages.push("Toe tap: " + backTapTime + " Val: " + backTapValue);
 					//$scope.$apply();
-					DoublestepSdk.execEventHandler("BackTap");
 				}
 				rangeHigh = 0;
 				rangeLow = 1023;
 				checkBackTap = false;
-				//Could be residual readings from heel tap
-			} else if((date.getTime() <= frontTapTime + tapExpiry) && frontTapValue != -1 && value > (parseInt(frontTapValue) - tapBuffer)) {
+			//Could be residual readings from heel tap
+			} else if((time <= frontTapTime + tapExpiry) && frontTapValue != -1 && value > (parseInt(frontTapValue) - tapBuffer)) {
 				console.log("still tapping - heel");
 				rangeHigh = 0;
-				//Could be residual readings from toe tap
-			} else if((date.getTime() <= (backTapTime + tapExpiry)) && frontTapValue != -1 && value < (parseInt(backTapValue) + tapBuffer)) {
+			//Could be residual readings from toe tap
+			} else if((time <= (backTapTime + tapExpiry)) && frontTapValue != -1 && value < (parseInt(backTapValue) + tapBuffer)) {
 				console.log("still tapping - toe");
 				rangeLow = 1023;
-				//Think foot is stationery
+			//Think foot is stationery
 			} else {
 				frontTapValue = 1023;
 				backTapValue = 0;
