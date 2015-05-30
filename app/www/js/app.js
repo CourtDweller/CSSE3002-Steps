@@ -75,18 +75,64 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	});
 
 	$stateProvider.state('mediaPlayer', {
-			url: "/mediaPlayer",
-			templateUrl: "views/mediaPlayer.html"
+		url: "/mediaPlayer",
+		controller: 'MediaPlayerCtrl',
+		templateUrl: "views/mediaPlayer.html"
 	});
 
 
 	$stateProvider.state('bluetooth', {
-			url: "/bluetooth",
-			templateUrl: "views/bluetooth.html"
+		url: "/bluetooth",
+		templateUrl: "views/bluetooth.html"
 	});
 
 
 	$urlRouterProvider.otherwise('/doublestep');
+})
+
+.controller('MediaPlayerCtrl', function($scope, $ionicPlatform) {
+	var isPaused = false;
+
+	$scope.mediaPlayer = {
+		started: false
+	};
+
+	$scope.start = function() {
+		$scope.mediaPlayer.started = true;
+
+		DoublestepSdk.init();
+
+		DoublestepSdk.bind("FrontTap", function() {
+			console.log("previous");
+			MediaController.previous();
+		});
+
+		DoublestepSdk.bind("BackTap", function() {
+			console.log("next");
+			MediaController.next();
+		});
+
+		DoublestepSdk.bind("DoubleFrontTap", function(value) {
+			console.log("stop");
+			MediaController.stop();
+		});
+
+		DoublestepSdk.bind("DoubleBackTap", function(value) {
+			console.log("pause/play");
+			if (isPaused) {
+				isPaused = false;
+				MediaController.play();
+			} else {
+				isPaused = true;
+				MediaController.pause();
+			}
+		});
+	};
+
+	$scope.stop = function() {
+		$scope.mediaPlayer.started = false;
+		DoublestepSdk.unbindAll();
+	};
 })
 
 .controller('BalanceCtrl', function($scope, $ionicPlatform, $ionicHistory) {

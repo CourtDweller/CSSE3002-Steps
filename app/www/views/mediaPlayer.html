@@ -2,7 +2,7 @@
 	<ion-content has-bouncing="true" padding="true">
 		<img class="featureImage" src="img/music.png" />
 		<p class="description">Turn this mode on to enable use of the Back Tap and Front Tap to go between songs, and the Double Back Tap to pause/play tracks on Google Play Music </p>
-		<button class="mainButton" ng-hide="mediaPlayer.started">Start</button>
-        <button class="mainButton" ng-show="mediaPlayer.started">Stop</button>
+		<button class="mainButton" ng-hide="mediaPlayer.started" ng-click="start()">Start</button>
+        <button class="mainButton" ng-show="mediaPlayer.started" ng-click="stop()">Stop</button>
 	</ion-content>
 </ion-view>
