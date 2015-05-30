@@ -148,5 +148,64 @@ var DoublestepSdk = {
 		}
 		
 		DoublestepSdk.execEventHandler('ReceivedReading', value);
+	},
+	
+	simulate: {
+		randomDataTimer: null,
+		variedDataTimer: null,
+		
+		receivedReading: function(value) {
+			DoublestepSdk.execEventHandler('ReceivedReading', value);
+		},
+		
+		frontTap: function() {
+			DoublestepSdk.execEventHandler('FrontTap');
+		},
+		
+		backTap: function() {
+			DoublestepSdk.execEventHandler('BackTap');
+		},
+		
+		doubleFrontTap: function() {
+			DoublestepSdk.execEventHandler('DoubleFrontTap');
+		},
+		
+		doubleBackTap: function() {
+			DoublestepSdk.execEventHandler('DoubleBackTap');
+		},
+		
+		startRandomData: function(min, max) {
+			if (typeof min == "undefined" || min == null) {
+				min = 0;
+			}
+			if (typeof max == "undefined" || max == null) {
+				max = 1023;
+			}
+			DoublestepSdk.simulate.randomDataTimer = setInterval(function() {
+				var value = Math.floor(Math.random() * max) + min;
+				console.log(value);
+				DoublestepSdk.onReceivedReading(value);
+			}, 100);
+		},
+		
+		startVariedData(value, variation) {
+			if (typeof value == "undefined" || value == null) {
+				value = 500;
+			}
+			if (typeof variation == "undefined" || variation == null) {
+				variation = 5; //percent 
+			}
+			DoublestepSdk.simulate.variedDataTimer = setInterval(function() {
+				var v = value * (1+((Math.floor(Math.random() * variation * 2) - variation) / 100));
+				console.log(v);
+				DoublestepSdk.onReceivedReading(v);
+			}, 100);
+		},
+		
+		stop: function() {
+			clearInterval(DoublestepSdk.simulate.randomDataTimer);
+			clearInterval(DoublestepSdk.simulate.variedDataTimer);
+		}
+		
 	}
 }
