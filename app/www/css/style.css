@@ -1,14 +1,16 @@
 #background {
 	height:700px;
-	background: linear-gradient(to bottom, #393948, #eaeaec); 
+	background: linear-gradient(to bottom, #393948, #eaeaec);
 	text-align:center;
 }
 
+/*
 .title{
 	height:15%;
 	width:75%;
 	margin: 30px 0px 15px 45px;
 }
+*/
 
 .icon {
     width: 80px;
@@ -86,7 +88,7 @@ td {
 
 .selected {
     background-color: #727272;
-} 
+}
 
 .deselected {
     background-color: #595959;
