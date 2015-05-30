@@ -51,6 +51,12 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		url: "/kelly",
 		templateUrl: "views/kelly.html"
 	})
+
+
+	$stateProvider.state('functions', {
+		url: "/functions",
+		templateUrl: "views/functions.html"
+	})
 	
 	$stateProvider.state('alarm', {
 		url: "/alarm",
