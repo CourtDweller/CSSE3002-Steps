@@ -52,7 +52,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		templateUrl: "views/kelly.html"
 	})
 
-
 	$stateProvider.state('functions', {
 		url: "/functions",
 		templateUrl: "views/functions.html"
@@ -61,6 +60,11 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$stateProvider.state('doublestep', {
 		url: "/doublestep",
 		templateUrl: "views/doublestep.html"
+	})
+	
+	$stateProvider.state('balanceWarmup', {
+		url: "/balanceWarmup",
+		templateUrl: "views/balanceWarmup.html"
 	})
 	
 	$stateProvider.state('alarm', {

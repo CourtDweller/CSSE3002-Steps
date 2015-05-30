@@ -1,12 +1,7 @@
 #background {
-	height:600px;
+	height:700px;
 	background: linear-gradient(to bottom, #393948, #eaeaec); 
-}
-
-.title{
-	height:15%;
-	width:75%;
-	margin: 30px 0px 15px 45px;
+	text-align:center;
 }
 
 .icon {
@@ -14,12 +9,31 @@
     height: 80px;
 }
 
-.mainButton {
-    background-color: red;
+p{
+	font-family:"Myriad Pro";
+	font-size:18pt;
+	text-shadow:1px 1px black;
+	padding: 0 40px;
+	color: white;
+	margin-bottom: 1em;
+}
+
+.homeButton {
+    background: linear-gradient(to bottom, #a50b0b, #d31414);
     color: white;
     border-radius: 10px;
-    width: 100%;
-    font-size: 30px;
+    width: 175px;
+    font-size:26px;
+	height:60px;
+}
+
+.mainButton {
+    background: linear-gradient(to bottom, #a50b0b, #d31414);
+    color: white;
+    border-radius: 10px;
+    width: 175px;
+    font-size:26px;
+	height:60px;
 }
 
 td {
@@ -30,8 +44,32 @@ td {
     padding-bottom: 10px;
 }
 
+#about{
+	margin-top:4em;
+	width:100%;
+	text-align:center;
+}
+
 .centredTable {
-    position: absolute;
     top: 50px;
     margin: 0px auto;
+}
+
+/* Individual image styling */
+
+#doublestepImg{
+	height:12%;
+	width:75%;
+	margin: 30px 0 30px 0;
+}
+
+#balanceCheckImg{
+	height:6%;
+	width:80%;
+	margin: 30px 0 5px 0;
+}
+
+#yogaImg{
+	height:325px;
+	width:285px;
 }
