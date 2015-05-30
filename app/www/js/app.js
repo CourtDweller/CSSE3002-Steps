@@ -47,11 +47,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		templateUrl: "views/ble.html"
 	});
 
-	$stateProvider.state('kelly', {
-		url: "/kelly",
-		templateUrl: "views/kelly.html"
-	});
-
 	$stateProvider.state('functions', {
 		url: "/functions",
 		templateUrl: "views/functions.html"
