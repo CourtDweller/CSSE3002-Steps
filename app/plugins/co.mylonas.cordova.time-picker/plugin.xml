@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plugin xmlns="http://www.phonegap.com/ns/plugins/1.0"
+        id="co.mylonas.cordova.time-picker"
+		version="0.0.1">
+    <name>Time Picker</name>
+    <description>Time Picker</description>
+
+    <js-module src="www/TimePicker.js" name="TimePicker">
+        <clobbers target="TimePicker" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="TimePicker">
+                <param name="android-package" value="co.mylonas.cordova.timepicker.TimePicker" />
+            </feature>
+        </config-file>
+
+        <source-file src="src/TimePicker.java" target-dir="src/co/mylonas/cordova/timepicker" />
+     </platform>
+</plugin>
