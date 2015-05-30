@@ -53,8 +53,9 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	});
 
 	$stateProvider.state('calls', {
-			url: "/calls",
-			templateUrl: "views/calls.html"
+		url: "/calls",
+		controller: 'CallsCtrl',
+		templateUrl: "views/calls.html"
 	});
 
 	$stateProvider.state('balanceWarmup', {
@@ -90,6 +91,39 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$urlRouterProvider.otherwise('/doublestep');
 })
 
+.controller('CallsCtrl', function($scope, $ionicPlatform) {
+	$scope.calls = {
+		started: false,
+		phoneState: "IDLE" // RINGING, OFFHOOK or IDLE
+	};
+
+	$scope.start = function() {
+		$scope.calls.started = true;
+
+		DoublestepSdk.init();
+
+		DoublestepSdk.bind("DoubleBackTap", function() {
+			if ($scope.calls.phoneState == "RINGING") {
+				PhoneAttendant.declineCall(function(success) {
+					console.log("Phone call declined");
+				}, function(error) {
+					console.error("Could not decline phone call: ", error);
+				});
+			}
+		});
+
+		PhoneCallTrap.onCall(function(state) {
+			$scope.calls.phoneState = state;
+		});
+	};
+
+	$scope.stop = function() {
+		$scope.calls.started = false;
+		DoublestepSdk.unbindAll();
+		PhoneCallTrap.onCall(function() {});
+	};
+})
+
 .controller('MediaPlayerCtrl', function($scope, $ionicPlatform) {
 	var isPaused = false;
 
@@ -112,12 +146,12 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			MediaController.next();
 		});
 
-		DoublestepSdk.bind("DoubleFrontTap", function(value) {
+		DoublestepSdk.bind("DoubleFrontTap", function() {
 			console.log("stop");
 			MediaController.stop();
 		});
 
-		DoublestepSdk.bind("DoubleBackTap", function(value) {
+		DoublestepSdk.bind("DoubleBackTap", function() {
 			console.log("pause/play");
 			if (isPaused) {
 				isPaused = false;
@@ -328,47 +362,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			$scope.messages.push("DOUBLE BACK TAP");
 			$scope.$apply();
 		});
-
-		//AlarmClock.setAlarm(null);
-
-		/*
-		MediaController.stop();
-		MediaController.next();
-		MediaController.previous();
-		MediaController.pause();
-		MediaController.play();
-		*/
-
-		/*
-		PhoneCallTrap.onCall(function(state) {
-		console.log("CHANGE STATE: " + state);
-
-		switch (state) {
-		case "RINGING":
-		console.log("Phone is ringing");
-
-		// TODO: Detect foot tap. For now, just set a timer
-		setTimeout(function() {
-		PhoneAttendant.declineCall(function(success) {
-		console.log("success");
-		}, function(error) {
-		console.error(error);
-		});
-		}, 3000);
-
-		break;
-		case "OFFHOOK":
-		console.log("Phone is off-hook");
-		break;
-
-		case "IDLE":
-		console.log("Phone is idle");
-		break;
-		}
-		});
-		*/
-
-
 	});
 });
 

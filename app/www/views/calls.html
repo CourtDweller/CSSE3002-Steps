@@ -2,8 +2,8 @@
 	<ion-content has-bouncing="true" padding="true">
 		<img class="featureImage" src="img/phone.png" />
 		<p class="description">Turn this mode on to enable use of the Double Back Tap gesture to send calls to message bank.</p>
-		<button class="mainButton" ng-hide="calls.started">Start</button>
-        <button class="mainButton" ng-show="calls.started">Stop</button>
+		<button class="mainButton" ng-hide="calls.started" ng-click="start()">Start</button>
+        <button class="mainButton" ng-show="calls.started" ng-click="stop()">Stop</button>
 		</div>
 	</ion-content>
 </ion-view>
