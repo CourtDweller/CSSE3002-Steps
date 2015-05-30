@@ -1,8 +1,12 @@
-<ion-view view-title="Alarm Clock">
-	<ion-content has-bouncing="true" padding="true">
-		<p>Select time</p>
-		<input type="time" name="time" id="time" ng-model="alarm.time" ng-change="timeSet()"/>
-		<button ng-click="startAlarm()" ng-hide="alarmRunning">Start Alarm</button>
-		<button ng-click="stopAlarm()" ng-show="alarmRunning">Stop Alarm</button>
+<ion-view view-title="Doublestep">
+	<ion-content has-bouncing="true" padding="false">
+		<div id="background">
+			<img src="../img/titles/alarmClock.png" id="alarmImg"></img>
+			<img src="../img/alarm.png" id="clockImg"></img>
+			<p>Select time:</p>
+			<input type="time" name="time" id="time" ng-model="alarm.time" ng-change="timeSet()"/>
+			<button ng-click="startAlarm()" ng-hide="alarmRunning" class="mainButton">Start Alarm</button>
+			<button ng-click="stopAlarm()" ng-show="alarmRunning" class="mainButton" id="stopColour">Stop Alarm</button>
+		</div>
 	</ion-content>
 </ion-view>

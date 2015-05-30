@@ -72,6 +72,11 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		templateUrl: "views/balanceWarmup.html"
 	})
 	
+	$stateProvider.state('balance', {
+		url: "/balance",
+		templateUrl: "views/balance.html"
+	})
+	
 	$stateProvider.state('alarm', {
 		url: "/alarm",
 		controller: 'AlarmCtrl',
