@@ -19,7 +19,8 @@
     "org.apache.cordova.console",
     "com.ionic.keyboard",
     "cordova-plugin-device",
-    "cordova-plugin-statusbar"
+    "cordova-plugin-statusbar",
+    "cordova-plugin-media"
   ],
   "cordovaPlatforms": [
     "android"

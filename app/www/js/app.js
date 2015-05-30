@@ -51,10 +51,56 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		url: "/kelly",
 		templateUrl: "views/kelly.html"
 	})
+	
+	$stateProvider.state('alarm', {
+		url: "/alarm",
+		controller: 'AlarmCtrl',
+		templateUrl: "views/alarm.html"
+	});
+	
+	
 
 	$urlRouterProvider.otherwise('/ble');
 })
 
+.controller('AlarmCtrl', function($scope, $ionicPlatform) {
+	var alarmTimer = null;
+	$scope.alarm = {time: new Date()};
+	$scope.alarmRunning = false;
+	
+	$scope.timeSet = function() {
+		var time = parseInt($scope.alarm.time.getHours() + "" + pad($scope.alarm.time.getMinutes(), 2));
+		console.log(time);
+	};
+	
+	$scope.startAlarm = function() {
+		$scope.alarmRunning = true;
+		alarmTimer = setInterval(function() {
+			
+		}, 5000);
+		
+		$scope.playAlarm();
+	};
+	
+	$scope.stopAlarm = function() {
+		$scope.alarmRunning = false;
+	};
+	
+	$scope.playAlarm = function() {
+		var my_media = new Media("alarm.mp3",
+        // success callback
+        function () {
+            console.log("playAudio():Audio Success");
+        },
+        // error callback
+        function (err) {
+            console.log("playAudio():Audio Error: " + err);
+        }
+		);
+		// Play audio
+		my_media.play();
+	};
+})
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
 	
@@ -161,6 +207,11 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 
 
+function pad(num, size) {
+    var s = num+"";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
 
 
 function Log() {

@@ -1,0 +1,8 @@
+<ion-view view-title="Alarm Clock">
+	<ion-content has-bouncing="true" padding="true">
+		<p>Select time</p>
+		<input type="time" name="time" id="time" ng-model="alarm.time" ng-change="timeSet()"/>
+		<button ng-click="startAlarm()" ng-hide="alarmRunning">Start Alarm</button>
+		<button ng-click="stopAlarm()" ng-show="alarmRunning">Stop Alarm</button>
+	</ion-content>
+</ion-view>
