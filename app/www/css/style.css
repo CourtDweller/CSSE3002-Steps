@@ -233,14 +233,14 @@ ion-content {
 #line1,
 #line2 {
 	position:absolute;
-	top: 35%;
+	top: 40%;
 	left: 10%;
 	max-width: 440px;
 	width: 80%;
 }
 
 #line2{
-	top: 65%;
+	top: 60%;
 }
 
 #balanceMarker{

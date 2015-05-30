@@ -1,6 +1,6 @@
 <ion-view view-title="Balance Check" id="balance">
 	<ion-content has-bouncing="true" padding="true">
-		<p id="timeLabel">{{balance.timeElapsed}}0:00</p>
+		<p id="timeLabel">{{balance.timeElapsed}}</p>
 
 		<div id="balanceGame">
 			<img src="img/balanceLine.png" id="line1"></img>
@@ -9,5 +9,6 @@
 		</div>
 
 		<p class="description">Maintain your balance between the green lines.</p>
+		<button ng-click="restart()" class="mainButton" ng-show="balance.canRestart">Restart</button>
 	</ion-content>
 </ion-view>

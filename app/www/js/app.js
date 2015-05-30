@@ -64,6 +64,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 	$stateProvider.state('balance', {
 		url: "/balance",
+		controller: 'BalanceCtrl',
 		templateUrl: "views/balance.html"
 	});
 
@@ -86,6 +87,71 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 
 	$urlRouterProvider.otherwise('/doublestep');
+})
+
+.controller('BalanceCtrl', function($scope, $ionicPlatform, $ionicHistory) {
+	$scope.balance = {
+		timeElapsed: "0:00",
+		canRestart: false
+	};
+
+	$scope.restart = function() {
+		$ionicHistory.goBack();
+	};
+
+	$ionicPlatform.ready(function() {
+		var readings = [];
+		var balanceAvg = null;
+		var lastReading = null;
+		var timer = null;
+		var secondsElapsed = 0;
+
+		DoublestepSdk.init();
+		DoublestepSdk.bind("ReceivedReading", function(value) {
+			if (readings.length === 0) {
+				setTimeout(function() {
+					var avg = 0;
+					for (var i=0; i<readings.length; i++) {
+						avg += readings[i];
+					}
+					balanceAvg = avg/readings.length;
+					timer = setInterval(function() {
+						secondsElapsed++;
+						$scope.balance.timeElapsed = Math.floor(secondsElapsed/60) + ":" + pad((secondsElapsed % 60), 2);
+						$scope.$apply();
+					}, 1000);
+				}, 1000);
+			}
+			lastReading = value;
+
+			if (balanceAvg === null) {
+				readings.push(value);
+			} else {
+				if (value > balanceAvg*1.1 || value < balanceAvg*0.1) {
+					$scope.balance.canRestart = true;
+					$scope.$apply();
+					angular.element(document.querySelector("#balanceMarker")).css({
+						"transform": "translate3d(0, 0, 0)",
+						"-webkit-transform": "translate3d(0, 0., 0)"
+					});
+
+					DoublestepSdk.unbind("ReceivedReading");
+					clearInterval(timer);
+					DoublestepSdk.simulate.stop();
+
+					alert("You lasted " + $scope.balance.timeElapsed);
+				} else {
+					var percentageDifference = 100*value/balanceAvg - 100;
+					angular.element(document.querySelector("#balanceMarker")).css({
+						"transform": "translate3d(0, "+percentageDifference+"%, 0)",
+						"-webkit-transform": "translate3d(0, "+percentageDifference+"%, 0)"
+					});
+				}
+			}
+		});
+
+		DoublestepSdk.simulate.startVariedData(500, 10);
+	});
 })
 
 .controller('AlarmCtrl', function($scope, $ionicPlatform) {
@@ -196,38 +262,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$ionicPlatform.ready(function() {
 
 		DoublestepSdk.init();
-
-		// assuming balance mode
-		var readings = [];
-		var balanceAvg = null;
-		var lastReading = null;
-
-		DoublestepSdk.bind("ReceivedReading", function(value) {
-			//console.log("RECEIVED READING: "+value);
-			if (readings.length === 0) {
-				setTimeout(function() {
-					var avg = 0;
-					for (var i=0; i<readings.length; i++) {
-						avg += i<rreadings[i];
-					}
-					balanceAvg = avg/readings.length;
-				}, 2000);
-			}
-			lastReading = value;
-
-			if (balanceAvg === null) {
-				readings.push(value);
-			} else {
-				if (value > balanceAvg*1.2 || value < balanceAvg*0.8) {
-					alert("you suck");
-				} else {
-					$scope.balancePercentage = 100*value/1023;
-					//$scope.balancePercentage = 100*value/balanceAvg;
-					$scope.$apply();
-				}
-			}
-		});
-
 
 		DoublestepSdk.bind("FrontTap", function() {
 			$scope.messages.push("FRONT TAP");

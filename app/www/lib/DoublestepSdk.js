@@ -61,6 +61,7 @@ var DoublestepSdk = {
 	},
 
 	init: function() {
+		DoublestepSdk.unbindAll();
 		DoublestepSdk.bluetooth.start();
 	},
 
@@ -283,6 +284,7 @@ var DoublestepSdk = {
 			if (typeof max == "undefined" || max === null) {
 				max = 1023;
 			}
+			DoublestepSdk.simulate.stop();
 			DoublestepSdk.simulate.randomDataTimer = setInterval(function() {
 				var value = Math.floor(Math.random() * max) + min;
 				console.log(value);
@@ -297,6 +299,7 @@ var DoublestepSdk = {
 			if (typeof variation == "undefined" || variation === null) {
 				variation = 5; //percent
 			}
+			DoublestepSdk.simulate.stop();
 			DoublestepSdk.simulate.variedDataTimer = setInterval(function() {
 				var v = value * (1+((Math.floor(Math.random() * variation * 2) - variation) / 100));
 				console.log(v);
