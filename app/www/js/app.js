@@ -46,75 +46,95 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		controller: 'BleCtrl',
 		templateUrl: "views/ble.html"
 	})
-	
+
 	$stateProvider.state('kelly', {
 		url: "/kelly",
 		templateUrl: "views/kelly.html"
 	})
-	
+
 	$stateProvider.state('alarm', {
 		url: "/alarm",
 		controller: 'AlarmCtrl',
 		templateUrl: "views/alarm.html"
 	});
-	
-	
+
+
 
 	$urlRouterProvider.otherwise('/ble');
 })
 
 .controller('AlarmCtrl', function($scope, $ionicPlatform) {
 	var alarmTimer = null;
+	var alarmSound = null;
 	$scope.alarm = {time: new Date()};
 	$scope.alarmRunning = false;
-	
+
 	$scope.timeSet = function() {
 		var time = parseInt($scope.alarm.time.getHours() + "" + pad($scope.alarm.time.getMinutes(), 2));
 		console.log(time);
 	};
-	
+
 	$scope.startAlarm = function() {
 		$scope.alarmRunning = true;
 		alarmTimer = setInterval(function() {
-			
+
 		}, 5000);
-		
-		$scope.playAlarm();
+
+		$scope.playAlarmSound();
 	};
-	
+
 	$scope.stopAlarm = function() {
 		$scope.alarmRunning = false;
+		alarmSound.stop();
+		alarmSound.release();
+		alarmSound = null;
 	};
-	
-	$scope.playAlarm = function() {
-		var my_media = new Media("alarm.mp3",
-        // success callback
-        function () {
-            console.log("playAudio():Audio Success");
-        },
-        // error callback
-        function (err) {
-            console.log("playAudio():Audio Error: " + err);
-        }
+
+	$scope.playAlarmSound = function() {
+		alarmSound = new Media("/android_asset/www/alarm.mp3", function () {
+			//console.log("repeating");
+			//$scope.playAlarmSound();
+		}, function (err) {
+				var errors = {};
+				errors[MediaError.MEDIA_ERR_ABORTED] = "MEDIA_ERR_ABORTED";
+				errors[MediaError.MEDIA_ERR_NETWORK] = "MEDIA_ERR_NETWORK";
+				errors[MediaError.MEDIA_ERR_DECODE] = "MEDIA_ERR_DECODE";
+				errors[MediaError.MEDIA_ERR_NONE_SUPPORTED] = "MEDIA_ERR_NONE_SUPPORTED";
+				console.error("playAudio():Audio Error: ", errors[err.code]);
+			}
 		);
 		// Play audio
-		my_media.play();
+		alarmSound.play();
+		alarmSound.setVolume(1.0);
+
+		var alarmSoundTimer = setInterval(function() {
+			if (alarmSound === null) {
+				clearInterval(alarmSoundTimer);
+			} else {
+				alarmSound.getCurrentPosition(function(position) {
+					console.log(position);
+					if (parseFloat(position) > alarmSound.getDuration() - 2) {
+						alarmSound.seekTo(1000);
+					}
+				});
+			}
+		}, 1000);
 	};
 })
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
-	
+
 	$scope.messages = [];
-	
-    $ionicPlatform.ready(function() {
-	
+
+	$ionicPlatform.ready(function() {
+
 		DoublestepSdk.init();
-		
+
 		// assuming balance mode
 		var readings = [];
 		var balanceAvg = null;
 		var lastReading = null;
-		
+
 		DoublestepSdk.bind("ReceivedReading", function(value) {
 			//console.log("RECEIVED READING: "+value);
 			if (readings.length == 0) {
@@ -127,7 +147,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 				}, 2000);
 			}
 			lastReading = value;
-			
+
 			if (balanceAvg == null) {
 				readings.push(value);
 			} else {
@@ -140,30 +160,30 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 				}
 			}
 		});
-		
-		
+
+
 		DoublestepSdk.bind("FrontTap", function() {
 			$scope.messages.push("FRONT TAP");
 			$scope.$apply();
 		});
-		
+
 		DoublestepSdk.bind("BackTap", function() {
 			$scope.messages.push("BACK TAP");
 			$scope.$apply();
 		});
-		
+
 		DoublestepSdk.bind("DoubleFrontTap", function(value) {
 			$scope.messages.push("DOUBLE FRONT TAP");
 			$scope.$apply();
 		});
-		
+
 		DoublestepSdk.bind("DoubleBackTap", function(value) {
 			$scope.messages.push("DOUBLE BACK TAP");
 			$scope.$apply();
 		});
-	
+
 		//AlarmClock.setAlarm(null);
-	
+
 		/*
 		MediaController.stop();
 		MediaController.next();
@@ -175,11 +195,11 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		/*
 		PhoneCallTrap.onCall(function(state) {
 		console.log("CHANGE STATE: " + state);
-		
+
 		switch (state) {
 		case "RINGING":
 		console.log("Phone is ringing");
-		
+
 		// TODO: Detect foot tap. For now, just set a timer
 		setTimeout(function() {
 		PhoneAttendant.declineCall(function(success) {
@@ -188,29 +208,29 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		console.error(error);
 		});
 		}, 3000);
-		
+
 		break;
 		case "OFFHOOK":
 		console.log("Phone is off-hook");
 		break;
-		
+
 		case "IDLE":
 		console.log("Phone is idle");
 		break;
 		}
 		});
 		*/
-			
-        
-    });
+
+
+	});
 });
 
 
 
 function pad(num, size) {
-    var s = num+"";
-    while (s.length < size) s = "0" + s;
-    return s;
+	var s = num+"";
+	while (s.length < size) s = "0" + s;
+	return s;
 }
 
 
