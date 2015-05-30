@@ -45,12 +45,12 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		url: "/ble",
 		controller: 'BleCtrl',
 		templateUrl: "views/ble.html"
-	})
+	});
 
 	$stateProvider.state('kelly', {
 		url: "/kelly",
 		templateUrl: "views/kelly.html"
-	})
+	});
 
 	$stateProvider.state('alarm', {
 		url: "/alarm",
@@ -66,12 +66,29 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 .controller('AlarmCtrl', function($scope, $ionicPlatform) {
 	var alarmTimer = null;
 	var alarmSound = null;
-	$scope.alarm = {time: new Date()};
+
+	$scope.alarm = {
+		time: null,
+		timeToGo: null
+	};
 	$scope.alarmRunning = false;
 
-	$scope.timeSet = function() {
-		var time = parseInt($scope.alarm.time.getHours() + "" + pad($scope.alarm.time.getMinutes(), 2));
-		console.log(time);
+	$scope.setTime = function() {
+		TimePicker.show(function(time) {
+			var today = new Date();
+			var now = parseInt(today.getHours() + "" + pad(today.getMinutes(), 2));
+			var alarm = parseInt(time.hour + pad(time.minute, 2));
+			var isAlarmTomorrow = 0;
+			if (alarm < now) {
+				// alarm time is less than current time, so set alarm for tomrrow
+				isAlarmTomorrow = 1;
+			}
+			$scope.alarm.time = new Date(today.getFullYear(), today.getMonth(), today.getDate()+isAlarmTomorrow, time.hour, time.minute);
+			$scope.$apply();
+
+		}, function(error) {
+			console.error("error", error);
+		});
 	};
 
 	$scope.startAlarm = function() {
@@ -84,17 +101,20 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	};
 
 	$scope.stopAlarm = function() {
-		$scope.alarmRunning = false;
-		alarmSound.stop();
-		alarmSound.release();
-		alarmSound = null;
+		if (alarmSound === null) {
+			// alarm is not going off, so we can stop
+			$scope.alarmRunning = false;
+		} else {
+			console.log("don't stop the alarm");
+		}
+
 	};
 
 	$scope.playAlarmSound = function() {
-		alarmSound = new Media("/android_asset/www/alarm.mp3", function () {
-			//console.log("repeating");
-			//$scope.playAlarmSound();
-		}, function (err) {
+		if (alarmSound !== null) {
+			$scope.stopAlarmSound();
+		}
+		alarmSound = new Media("/android_asset/www/alarm.mp3", null, function (err) {
 				var errors = {};
 				errors[MediaError.MEDIA_ERR_ABORTED] = "MEDIA_ERR_ABORTED";
 				errors[MediaError.MEDIA_ERR_NETWORK] = "MEDIA_ERR_NETWORK";
@@ -103,16 +123,15 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 				console.error("playAudio():Audio Error: ", errors[err.code]);
 			}
 		);
-		// Play audio
+
 		alarmSound.play();
 		alarmSound.setVolume(1.0);
-
+		// this timer repeats the alarm tone indefinately
 		var alarmSoundTimer = setInterval(function() {
 			if (alarmSound === null) {
 				clearInterval(alarmSoundTimer);
 			} else {
 				alarmSound.getCurrentPosition(function(position) {
-					console.log(position);
 					if (parseFloat(position) > alarmSound.getDuration() - 2) {
 						alarmSound.seekTo(1000);
 					}
@@ -120,6 +139,16 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			}
 		}, 1000);
 	};
+
+	$scope.stopAlarmSound = function() {
+		alarmSound.stop();
+		alarmSound.release();
+		alarmSound = null;
+	};
+
+	$ionicPlatform.ready(function() {
+		$scope.setTime();
+	});
 })
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
@@ -137,7 +166,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 		DoublestepSdk.bind("ReceivedReading", function(value) {
 			//console.log("RECEIVED READING: "+value);
-			if (readings.length == 0) {
+			if (readings.length === 0) {
 				setTimeout(function() {
 					var avg = 0;
 					for (var i=0; i<readings.length; i++) {
