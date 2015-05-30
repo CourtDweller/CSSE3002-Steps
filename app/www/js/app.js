@@ -47,11 +47,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		templateUrl: "views/ble.html"
 	});
 
-	$stateProvider.state('functions', {
-		url: "/functions",
-		templateUrl: "views/functions.html"
-	});
-
 	$stateProvider.state('doublestep', {
 		url: "/doublestep",
 		templateUrl: "views/doublestep.html"
@@ -78,30 +73,30 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		templateUrl: "views/alarm.html"
 	});
 
-		$stateProvider.state('mediaPlayer', {
-				url: "/mediaPlayer",
-				templateUrl: "views/mediaPlayer.html"
-		});
+	$stateProvider.state('mediaPlayer', {
+			url: "/mediaPlayer",
+			templateUrl: "views/mediaPlayer.html"
+	});
 
 
-		$stateProvider.state('bluetooth', {
-				url: "/bluetooth",
-				templateUrl: "views/bluetooth.html"
-		});
+	$stateProvider.state('bluetooth', {
+			url: "/bluetooth",
+			templateUrl: "views/bluetooth.html"
+	});
 
 
-
-	$urlRouterProvider.otherwise('/ble');
+	$urlRouterProvider.otherwise('/doublestep');
 })
 
 .controller('AlarmCtrl', function($scope, $ionicPlatform) {
 	var alarmTimer = null;
+	var alarmSound = null;
 
 	$scope.alarm = {
+		started: false,
 		time: null,
 		timeToGo: null
 	};
-	$scope.alarmRunning = false;
 
 	$scope.setTime = function() {
 		TimePicker.show(function(time) {
@@ -115,15 +110,20 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			}
 			$scope.alarm.time = new Date(today.getFullYear(), today.getMonth(), today.getDate()+isAlarmTomorrow, time.hour, time.minute);
 			$scope.$apply();
-
+			$scope.startAlarm();
 		}, function(error) {
 			console.error("error", error);
 		});
 	};
 
 	$scope.startAlarm = function() {
-		$scope.alarmRunning = true;
+		$scope.alarm.started = true;
 		alarmTimer = setInterval(function() {
+			var now = new Date().valueOf();
+			var alarm = $scope.alarm.time.valueOf();
+			var difference = alarm - now;
+			console.log(now, alarm, difference);
+
 
 		}, 5000);
 
@@ -133,7 +133,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$scope.stopAlarm = function() {
 		if (alarmSound === null) {
 			// alarm is not going off, so we can stop
-			$scope.alarmRunning = false;
+			$scope.alart.started = false;
 		} else {
 			console.log("don't stop the alarm");
 		}
@@ -175,12 +175,6 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		alarmSound.release();
 		alarmSound = null;
 	};
-
-	$ionicPlatform.ready(function() {
-		if (window.TimePicker) {
-			$scope.setTime();
-		}
-	});
 })
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {

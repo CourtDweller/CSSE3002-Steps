@@ -1,13 +1,9 @@
 <ion-view view-title="Doublestep">
-        <ion-content has-bouncing="true" padding="false">
-        <div id="background">
-            <div class="modeImage"> <img class="featureImage" src="../img/phone-icon.png" /> </div>
-            <div class="description">
-                <p> Turn this mode on to enable use of the Double Back Tap gesture to send calls to message bank </p>
-            </div>
-            <div class="onOffButton">
-		    <button class="mainButton"> Start </button>
-            </div> 
-        </div>
-        </ion-content>
+	<ion-content has-bouncing="true" padding="true">
+		<img class="featureImage" src="img/phone.png" />
+		<p class="description">Turn this mode on to enable use of the Double Back Tap gesture to send calls to message bank.</p>
+		<button class="mainButton" ng-hide="calls.started">Start</button>
+        <button class="mainButton" ng-show="calls.started">Stop</button>
+		</div>
+	</ion-content>
 </ion-view>

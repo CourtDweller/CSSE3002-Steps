@@ -1,13 +1,8 @@
-<ion-view view-title="Media Controller">
-        <ion-content has-bouncing="true" padding="false">
-        <div id="background">
-            <div class="modeImage"> <img class="featureImage" id="musicImage" src="../img/music-50.png" /> </div>
-            <div class="description">
-                <p> Turn this mode on to enable use of the Back Tap and Front Tap to go between songs, and the Double Back Tap to pause/play tracks on Google Play Music </p>
-            </div>
-            <div class="onOffButton">
-		    <button class="mainButton"> Start </button>
-            </div>
-        </div>
-        </ion-content>
+<ion-view view-title="Media Player">
+	<ion-content has-bouncing="true" padding="true">
+		<img class="featureImage" src="img/music.png" />
+		<p class="description">Turn this mode on to enable use of the Back Tap and Front Tap to go between songs, and the Double Back Tap to pause/play tracks on Google Play Music </p>
+		<button class="mainButton" ng-hide="mediaPlayer.started">Start</button>
+        <button class="mainButton" ng-show="mediaPlayer.started">Stop</button>
+	</ion-content>
 </ion-view>

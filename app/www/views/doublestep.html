@@ -1,33 +1,35 @@
-<ion-view view-title="Doublestep">
-	<ion-content has-bouncing="true" padding="false">
-		<div id="background">
-			<table class="centredTable">
-				<tr>
-					<td>
-						<img src="../img/Spanner.png" class="icon"></img>
-					</td>
-					<td>
-						<button onclick="window.location='#functions'" class="mainButton">Functions</button>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<img src="../img/9.png" class="icon"></img>
-					</td>
-					<td>
-						<button onclick="window.location='#settings'" class="mainButton">Settings</button>
-					</td>
-				</tr>
-				<tr>
-					<td>
-						<img src="../img/bluetooth.png" class="icon"></img>
-					</td>
-					<td>
-						<button onclick="window.location='#bluetooth'" class="mainButton">Bluetooth</button>
-					</td>
-				</tr>
-			</table>
-			<div id="about">Developed by Alex, Tim, Kelly, Leo, Nick and Blake</div>
-		</div>
+<ion-view view-title="Demo" id="doublestep">
+	<ion-content has-bouncing="true" padding="true">
+		<ul>
+			<li>
+				<img src="img/yoga.png" class="icon" />
+				<button onclick="window.location='#balanceWarmup'" class="mainButton">Balance Check</button>
+			</li>
+			<li>
+				<img src="img/alarm.png" class="icon" />
+				<button onclick="window.location='#alarm'" class="mainButton">Alarm Clock</button>
+			</li>
+			<li>
+				<img src="img/phone.png" class="icon" />
+				<button onclick="window.location='#calls'" class="mainButton">Disable Calls</button>
+			</li>
+			<li>
+				<img src="img/music.png" class="icon" />
+				<button onclick="window.location='#mediaPlayer'" class="mainButton">Media Player</button>
+			</li>
+			<li>
+				<img src="img/bluetooth.png" class="icon" />
+				<button onclick="window.location='#bluetooth'" class="mainButton">Bluetooth</button>
+			</li>
+		</ul>
+
+		<p class="small">The Doubelstep SDK and Demo app were developed by
+			Kelly Baxendale,
+			Alex Barnett,
+			Blake Ebert,
+			Nicholas Mayer,
+			Leo Mylonas, and
+			Timothy Sparks of the University of Queensland.
+		</p>
 	</ion-content>
 </ion-view>

@@ -12,37 +12,46 @@
 }
 */
 
+
 .icon {
-    width: 80px;
-    height: 80px;
+	width: 60px;
+	height: 60px;
 }
 
-p{
-	font-family:"Myriad Pro";
-	font-size:18pt;
+p {
+	font-size: 18px;
 	text-shadow:1px 1px black;
-	padding: 0 40px;
 	color: white;
 	margin-bottom: 1em;
 }
 
+p.small {
+	font-size: 12px;
+	text-align: center;
+	color: #000000;
+	text-shadow: none;
+	margin-top: 40px;
+}
+
 .homeButton {
-    background: linear-gradient(to bottom, #a50b0b, #d31414);
-    color: white;
-    border-radius: 10px;
-    width: 175px;
-    font-size:26px;
+	background: linear-gradient(to bottom, #a50b0b, #d31414);
+	color: white;
+	border-radius: 10px;
+	width: 175px;
+	font-size:26px;
 	height:60px;
 }
 
 .mainButton {
-    background: linear-gradient(to bottom, #a50b0b, #d31414);
-    color: white;
-    border-radius: 10px;
-    width: 175px;
-    font-size:23px;
-    font-family: "Tahoma";
-    height:60px;
+	background: linear-gradient(to bottom, #a50b0b, #d31414);
+	color: white;
+	border-radius: 10px;
+	width: 175px;
+	font-size:23px;
+	font-family: "Tahoma";
+	height:60px;
+	display:block;
+	margin: 0 auto;
 }
 
 #stopColour{
@@ -50,16 +59,16 @@ p{
 }
 
 tr {
-    text-align: center;
+	text-align: center;
 }
 
 td {
-    text-align: center;
-    vertical-align: middle;
-    padding-left: 10px;
-    padding-right: 10px;
-    padding-top: 10px;
-    padding-bottom: 10px;
+	text-align: center;
+	vertical-align: middle;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 #about{
@@ -69,49 +78,49 @@ td {
 }
 
 .centredTable {
-    top: 50px;
-    margin: 0px auto;
+	top: 50px;
+	margin: 0px auto;
 }
 
 #deviceList {
-    width: 100%;
-    margin: 0px auto;
+	width: 100%;
+	margin: 0px auto;
 }
 
 #deviceList td {
-    text-align: center;
-    padding-top: 0px;
-    padding-bottom: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
+	text-align: center;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	padding-left: 10px;
+	padding-right: 10px;
 }
 
 .selected {
-    background-color: #727272;
+	background-color: #727272;
 }
 
 .deselected {
-    background-color: #595959;
+	background-color: #595959;
 }
 
 #deviceListContainer {
-    border: 1px solid black;
-    height: 200px;
-    width: 80%;
-    margin-left: 10%;
-    background-color: #595959;
+	border: 1px solid black;
+	height: 200px;
+	width: 80%;
+	margin-left: 10%;
+	background-color: #595959;
 }
 
 .deviceTick {
-    width: 25px;
-    height: 25px;
+	width: 25px;
+	height: 25px;
 }
 
 h3 {
-    font-family: "Myriad Pro";
-    color: white;
-    padding-top: 5px;
-    font-size: 20px;
+	font-family: "Myriad Pro";
+	color: white;
+	padding-top: 5px;
+	font-size: 20px;
 }
 
 /* Individual image styling */
@@ -145,32 +154,6 @@ h3 {
 	margin: 30px 0 30px 0;
 }
 
-#line1{
-	position:absolute;
-	top:180px;
-	right:50px;
-	width:75%;
-}
-
-#line2{
-	position:absolute;
-	top:380px;
-	right:50px;
-	width:75%;
-}
-
-#balanceMarker{
-	position: relative;
-	/* 10 pixel offset due to it recognising the top of the marker and not the middle;
-		game field is between -10px and 190px with a 200px playing area */
-	top:90px;
-	right:0px;
-}
-
-#balanceGame{
-	margin-bottom:220px;
-}
-
 #time{
 	text-align:center;
 	margin: 0px auto;
@@ -180,10 +163,12 @@ h3 {
 }
 
 #timeLabel{
-	display:inline-block;
 	color:white;
 	font-size:24pt;
 	text-shadow:1px 1px black;
+	text-align: center;
+	margin: 0;
+	margin-top: 30px;
 }
 
 #timer{
@@ -197,26 +182,87 @@ h3 {
 }
 
 .functionTable {
-    top: 50px;
-    margin: 0px auto;
+	top: 50px;
+	margin: 0px auto;
 }
 
 .featureImage {
-    margin-top: 30px;
-    margin-bottom: 30px;
-    width: 150px;
-    height: 150px;
+	display: block;
+	margin: 30px auto;
+	width: 150px;
 }
 
 #musicImage {
-    margin-left: -20px;
+	margin-left: -20px;
 }
 
 .onOffButton {
-    padding-top: 20px;
-    margin: 0px auto;
+	padding-top: 20px;
+	margin: 0px auto;
 }
 
 .description {
-    padding-top: 20px;
+	padding-top: 20px;
+	text-align: center;
+}
+
+ion-content {
+	background: linear-gradient(to bottom, #393948, #eaeaec);
+}
+
+#doublestep li img.icon,
+#doublestep li button {
+	display: inline-block;
+	margin: 0;
+	vertical-align: top;
+}
+
+#doublestep li img.icon {
+	margin-right: 20px;
+}
+
+#doublestep li {
+	text-align: center;
+	margin: 20px 0;
+}
+
+#balance .scroll {
+	height: 100%;
+}
+
+#line1,
+#line2 {
+	position:absolute;
+	top: 35%;
+	left: 10%;
+	max-width: 440px;
+	width: 80%;
+}
+
+#line2{
+	top: 65%;
+}
+
+#balanceMarker{
+	position: relative;
+	left: 50%;
+	top: 50%;
+	margin-left: -15px;
+	margin-top: -15px;
+
+	transform: translate3d(0,0,0);
+	-webkit-transform: translate3d(0,0,0);
+	transition-duration: 50ms;
+	-webkit-transition-duration: 50ms;
+}
+
+#balanceGame{
+	height: 60%;
+	position: relative;
+}
+
+p.clock {
+	font-size: 48px;
+	text-align: center;
+	text-transform: lowercase;
 }
