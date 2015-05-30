@@ -38,8 +38,9 @@ p{
     color: white;
     border-radius: 10px;
     width: 175px;
-    font-size:24px;
-	height:60px;
+    font-size:23px;
+    font-family: "Tahoma";
+    height:60px;
 }
 
 #stopColour{
