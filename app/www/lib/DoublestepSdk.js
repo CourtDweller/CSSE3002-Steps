@@ -127,7 +127,7 @@ var DoublestepSdk = {
 				console.log("still tapping - heel");
 				rangeHigh = 0;
 			//Could be residual readings from toe tap
-			} else if((time <= (backTapTime + tapExpiry)) && frontTapValue != -1 && value < (parseInt(backTapValue) + tapBuffer)) {
+			} else if((time <= (backTapTime + tapExpiry)) && backTapValue != -1 && value < (parseInt(backTapValue) + tapBuffer)) {
 				console.log("still tapping - toe");
 				rangeLow = 1023;
 			//Think foot is stationery
@@ -138,14 +138,13 @@ var DoublestepSdk = {
 				rangeLow = 1023;
 				//console.log("not readings.length < numReadings")
 				for (var i = 0; i < (numReadings-1); i++) {
-					if (rangeHigh < parseInt(readings[i]) + buffer) {
-						rangeHigh = Math.min(parseInt(readings[i]) + buffer, 190);
+					if (rangeHigh < parseInt(readings[i])*1.2) {
+						rangeHigh = parseInt(readings[i])*1.2;
 						//console.log("range High: " + rangeHigh + " i is: " + i);
 					}
-					if (rangeLow > parseInt(readings[i]) - buffer) {
-						rangeLow = Math.max(parseInt(readings[i]) - buffer, minPressure);
+					if (rangeLow > parseInt(readings[i])*0.8) {
+						rangeLow = parseInt(readings[i])*0.8;
 						//console.log("range Low: " + rangeLow + " i is: " + i);
-
 					}
 					readings[i] = readings[i+1];
 				}
