@@ -70,13 +70,13 @@ var DoublestepSdk = {
 
 		date = new Date();
 		time = date.getTime();
-		if((time - backTapTime) > breakTime &&
+		if(((time - backTapTime) > breakTime) &&
 				backTapNeedsLogging) {
 			DoublestepSdk.execEventHandler("BackTap");
 			backTapNeedsLgging = false;
 			console.log("Backtap Registered");
 		}
-		if((time - frontTapTime) > breakTime &&
+		if(((time - frontTapTime) > breakTime) &&
 				frontTapNeedsLogging) {
 			DoublestepSdk.execEventHandler("FrontTap");
 			frontTapNeedsLogging = false;
