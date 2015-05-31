@@ -69,17 +69,19 @@ var DoublestepSdk = {
 		value = parseInt(value);
 
 		date = new Date();
-				time = date.getTime();
-				if((time - backTapTime) > breakTime &&
-						backTapNeedsLogging) {
-					DoublestepSdk.execEventHandler("BackTap");
-					backTapNeedsLgging = false;
-				}
-				if((time - frontTapTime) > breakTime &&
-						frontTapNeedsLogging) {
-					DoublestepSdk.execEventHandler("FrontTap");
-					frontTapNeedsLogging = false;
-				}
+		time = date.getTime();
+		if((time - backTapTime) > breakTime &&
+				backTapNeedsLogging) {
+			DoublestepSdk.execEventHandler("BackTap");
+			backTapNeedsLgging = false;
+			console.log("Backtap Registered");
+		}
+		if((time - frontTapTime) > breakTime &&
+				frontTapNeedsLogging) {
+			DoublestepSdk.execEventHandler("FrontTap");
+			frontTapNeedsLogging = false;
+			console.log("FrontTap Registered");
+		}
 		if(readings.length < numReadings) {
 			readings.push(value);
 			console.log("getting initial num readings: " + readings.length);
@@ -92,12 +94,11 @@ var DoublestepSdk = {
 						DoublestepSdk.execEventHandler("DoubleFrontTap");
 						doubleFrontTime = time;
 						frontTapNeedsLogging = false;
+						console.log("DoubleFrontTap Registered");
 					} else {
 						frontTapNeedsLogging = true;
 					}
 					frontTapTime = time;
-					//$scope.messages.push("Heel tap: " + frontTapTime + " Val: " + frontTapValue);
-					//$scope.$apply();
 					//console.log("Should have said Tap");
 					//Didn't add this one to readings array
 				}
@@ -112,12 +113,11 @@ var DoublestepSdk = {
 						DoublestepSdk.execEventHandler("DoubleBackTap");
 						doubleBackTime = time;
 						backTapNeedsLogging = false;
+						console.log("DoubleBackTap Registered");
 					} else {
 						backTapNeedsLogging = true;
 					}
 					backTapTime = time;
-					//$scope.messages.push("Toe tap: " + backTapTime + " Val: " + backTapValue);
-					//$scope.$apply();
 				}
 				rangeHigh = 0;
 				rangeLow = 1023;
@@ -149,8 +149,9 @@ var DoublestepSdk = {
 					}
 					readings[i] = readings[i+1];
 				}
-				//console.log("Range Low: " + rangeLow);
-				//console.log("Value: " + value);
+				console.log("Range Low: " + rangeLow);
+				console.log("Range High: " + rangeHigh);
+				console.log("Value: " + value);
 				readings[numReadings-1] = value;
 				if(value > rangeHigh) {
 					checkFrontTap = true;
@@ -159,9 +160,6 @@ var DoublestepSdk = {
 					checkBackTap = true;
 				} else {
 					//console.log("Notap pushing");
-					//$scope.messages.push("NoTap: " + value);
-					//$scope.messages.push("High: " + rangeHigh);
-					//$scope.$apply();
 				}
 			}
 		}
