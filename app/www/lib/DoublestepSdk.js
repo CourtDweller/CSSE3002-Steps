@@ -2,25 +2,22 @@ var readings = [];
 var rangeHigh = 0;
 var rangeLow = 1023;
 var numReadings = 20;
-var buffer = 60; //amount to add to range
-var tapBuffer = 10;
-var checkFrontTap = false;
-var checkBackTap = false;
+var checkFrontLift = false;
+var checkBackLift = false;
+var checkFrontDrop = false;
+var checkBackDrop = false;
 var frontTapValue = 1023;
 var backTapValue = 0;
 var frontTapTime = 0;
 var backTapTime = 0;
 var date = new Date();
-var breakTime = 700;
-var tapExpiry = 1000;
-var minPressure = 70;
-var sitPresure = 100;
-var standPressure = 600;
-var doubleBackTime = -1;
-var doubleFrontTime = -1;
+var longDuration = 2000;
 var time = -1;
 var frontTapNeedsLogging = false;
 var backTapNeedsLogging = false;
+var expiry = 5000;
+var lowerOutlier = 0.85;
+var upperOutlier = 1.15;
 
 var DoublestepSdk = {
 
@@ -28,8 +25,8 @@ var DoublestepSdk = {
 		ReceivedReading: null,
 		FrontTap: null,
 		BackTap: null,
-		DoubleFrontTap: null,
-		DoubleBackTap: null,
+		LongFrontTap: null,
+		LongBackTap: null,
 		FoundBleDoublestep: null,
 		ConnectionFailed: null
 	},
@@ -87,99 +84,89 @@ var DoublestepSdk = {
 
 	onReceivedReading: function(value) {
 		value = parseInt(value);
+		value = value - 60;
 
 		date = new Date();
 		time = date.getTime();
-		if(((time - backTapTime) > breakTime) &&
-				backTapNeedsLogging) {
-			DoublestepSdk.execEventHandler("BackTap");
-			backTapNeedsLogging = false;
-			console.log("Backtap Registered");
-		}
-		else if(((time - frontTapTime) > breakTime) &&
-				frontTapNeedsLogging) {
-			DoublestepSdk.execEventHandler("FrontTap");
-			frontTapNeedsLogging = false;
-			console.log("FrontTap Registered");
+		if(checkBackDrop && (time > backTapTime + expiry)) {
+			checkBackDrop = false;
+			readings = [];
+		} else if(checkFrontDrop && (time > frontTapTime + expiry)) {
+			checkFrontDrop = false;
+			readings = [];
 		}
 		if(readings.length < numReadings) {
 			readings.push(value);
 			console.log("getting initial num readings: " + readings.length);
 		} else {
-			if(checkFrontTap) {
-				//console.log("checkTap true")
-				if(value > rangeHigh) {
-					frontTapValue = value;
-					if((date.getTime() - frontTapTime) < breakTime) {
-						DoublestepSdk.execEventHandler("DoubleFrontTap");
-						doubleFrontTime = time;
-						frontTapNeedsLogging = false;
-						console.log("DoubleFrontTap Registered");
+			// This is the start of a front tap
+			if(checkFrontLift) {
+				frontTapValue = value;
+				frontTapTime = time;
+				checkFrontLift = false;
+				checkFrontDrop = true;
+			// Think is the start of a back tap
+			} else if(checkBackLift) {
+				backTapValue = value;
+				backTapTime = time;
+				checkBackLift = false;
+				checkBackDrop = true;
+			// Waiting for end of front tap
+			} else if(checkFrontDrop) {
+				if(value < rangeHigh) {
+					console.log("Detected front drop");
+					checkFrontDrop = false;
+					rangeLow = 1023;
+					rangeHigh = 0;
+					readings = [];
+					if(time - frontTapTime < longDuration) {
+						console.log("Front tap");
+						DoublestepSdk.execEventHandler('FrontTap', value);
 					} else {
-						frontTapNeedsLogging = true;
+						console.log("Long front tap");
+						DoublestepSdk.execEventHandler('LongFrontTap', value);
 					}
-					frontTapTime = time;
-					//console.log("Should have said Tap");
-					//Didn't add this one to readings array
 				}
-				rangeHigh = 0;
-				rangeLow = 1023;
-				checkFrontTap = false;
-				//Think this might be a toe tap
-			} else if(checkBackTap) {
-				if(value < rangeLow) {
-					backTapValue = value;
-					if((date.getTime() - backTapTime) < breakTime) {
-						DoublestepSdk.execEventHandler("DoubleBackTap");
-						doubleBackTime = time;
-						backTapNeedsLogging = false;
-						console.log("DoubleBackTap Registered");
+			// Waiting for end of back tap
+			} else if(checkBackDrop) {
+				if(value > rangeLow) {
+					console.log("Detected back drop");
+					checkBackDrop = false;
+					rangeLow = 1023;
+					rangeHigh = 0;
+					readings = [];
+					if(time - backTapTime < longDuration) {
+						console.log("Back tap");
+						DoublestepSdk.execEventHandler('BackTap', value);
 					} else {
-						backTapNeedsLogging = true;
+						console.log("Long back tap");
+						DoublestepSdk.execEventHandler('LongBackTap', value);
 					}
-					backTapTime = time;
 				}
-				rangeHigh = 0;
-				rangeLow = 1023;
-				checkBackTap = false;
-			//Could be residual readings from heel tap
-			} else if((time <= frontTapTime + tapExpiry) && frontTapValue != -1 && value > (parseInt(frontTapValue) - tapBuffer)) {
-				console.log("still tapping - heel");
-				rangeHigh = 0;
-			//Could be residual readings from toe tap
-			} else if((time <= (backTapTime + tapExpiry)) && backTapValue != -1 && value < (parseInt(backTapValue) + tapBuffer)) {
-				console.log("still tapping - toe");
-				rangeLow = 1023;
-			//Think foot is stationery
+
+			// Think foot is stationery
 			} else {
 				frontTapValue = 1023;
 				backTapValue = 0;
 				rangeHigh = 0;
 				rangeLow = 1023;
-				//console.log("not readings.length < numReadings")
 				for (var i = 0; i < (numReadings-1); i++) {
-					if (rangeHigh < parseInt(readings[i])*1.1) {
-						rangeHigh = parseInt(readings[i])*1.1;
-						//console.log("range High: " + rangeHigh + " i is: " + i);
+					if (rangeHigh < parseInt(readings[i])*upperOutlier) {
+						rangeHigh = parseInt(readings[i])*upperOutlier;
 					}
-					if (rangeLow > parseInt(readings[i])*0.9) {
-						rangeLow = parseInt(readings[i])*0.9;
-						//console.log("range Low: " + rangeLow + " i is: " + i);
+					if (rangeLow > parseInt(readings[i])*lowerOutlier) {
+						rangeLow = parseInt(readings[i])*lowerOutlier;
 					}
 					readings[i] = readings[i+1];
 				}
-				//console.log("Range Low: " + rangeLow);
-				//console.log("Range High: " + rangeHigh);
-				console.log("Value: " + value);
+				console.log("Value: " + value + " Low: " + rangeLow + " High: " + rangeHigh);
 				readings[numReadings-1] = value;
 				if(value > rangeHigh) {
-					checkFrontTap = true;
+					checkFrontLift = true;
 					console.log("Check front tap is now true");
 				} else if(value < rangeLow) {
-					checkBackTap = true;
+					checkBackLift = true;
 					console.log("Check back tap is now true");
-				} else {
-					//console.log("Notap pushing");
 				}
 			}
 		}
