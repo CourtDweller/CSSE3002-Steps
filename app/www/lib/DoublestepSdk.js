@@ -29,7 +29,8 @@ var DoublestepSdk = {
 		FrontTap: null,
 		BackTap: null,
 		DoubleFrontTap: null,
-		DoubleBackTap: null
+		DoubleBackTap: null,
+		FoundBleDoublestep: null
 	},
 
 	bind: function(event, callback) {
@@ -138,12 +139,12 @@ var DoublestepSdk = {
 				rangeLow = 1023;
 				//console.log("not readings.length < numReadings")
 				for (var i = 0; i < (numReadings-1); i++) {
-					if (rangeHigh < parseInt(readings[i])*1.2) {
-						rangeHigh = parseInt(readings[i])*1.2;
+					if (rangeHigh < parseInt(readings[i])*1.1) {
+						rangeHigh = parseInt(readings[i])*1.1;
 						//console.log("range High: " + rangeHigh + " i is: " + i);
 					}
-					if (rangeLow > parseInt(readings[i])*0.8) {
-						rangeLow = parseInt(readings[i])*0.8;
+					if (rangeLow > parseInt(readings[i])*0.9) {
+						rangeLow = parseInt(readings[i])*0.9;
 						//console.log("range Low: " + rangeLow + " i is: " + i);
 					}
 					readings[i] = readings[i+1];
@@ -309,7 +310,7 @@ var DoublestepSdk = {
 			clearInterval(DoublestepSdk.simulate.variedDataTimer);
 		}
 	},
-	
+
 	error: function(value) {
 		console.error("DoublestepSdk Error: ", value);
 	}

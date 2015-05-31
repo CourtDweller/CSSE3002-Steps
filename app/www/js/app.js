@@ -84,11 +84,29 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 	$stateProvider.state('bluetooth', {
 		url: "/bluetooth",
+		controller: 'BluetoothCtrl',
 		templateUrl: "views/bluetooth.html"
 	});
 
 
 	$urlRouterProvider.otherwise('/doublestep');
+})
+
+.controller('BluetoothCtrl', function($scope, $ionicPlatform) {
+	$scope.devicesFound = {
+		"123" : {address: "asdf"},
+		"456" : {address: "qwerty"},
+		"789" : {address: "zxvc"}
+	};
+
+	$ionicPlatform.ready(function() {
+
+		DoublestepSdk.bluetooth.options.autoconnect = false;
+		DoublestepSdk.init();
+		DoublestepSdk.bind("FoundBleDoublestep", function(device) {
+			$scope.devicesFound[device.address] = device;
+		});
+	});
 })
 
 .controller('CallsCtrl', function($scope, $ionicPlatform) {
