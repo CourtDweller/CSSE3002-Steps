@@ -74,10 +74,10 @@ var DoublestepSdk = {
 		if(((time - backTapTime) > breakTime) &&
 				backTapNeedsLogging) {
 			DoublestepSdk.execEventHandler("BackTap");
-			backTapNeedsLgging = false;
+			backTapNeedsLogging = false;
 			console.log("Backtap Registered");
 		}
-		if(((time - frontTapTime) > breakTime) &&
+		else if(((time - frontTapTime) > breakTime) &&
 				frontTapNeedsLogging) {
 			DoublestepSdk.execEventHandler("FrontTap");
 			frontTapNeedsLogging = false;
@@ -155,9 +155,10 @@ var DoublestepSdk = {
 				readings[numReadings-1] = value;
 				if(value > rangeHigh) {
 					checkFrontTap = true;
-					//console.log("Check tap is now true");
+					console.log("Check front tap is now true");
 				} else if(value < rangeLow) {
 					checkBackTap = true;
+					console.log("Check back tap is now true");
 				} else {
 					//console.log("Notap pushing");
 				}
