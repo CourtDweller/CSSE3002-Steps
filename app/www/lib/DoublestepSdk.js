@@ -30,7 +30,8 @@ var DoublestepSdk = {
 		BackTap: null,
 		DoubleFrontTap: null,
 		DoubleBackTap: null,
-		FoundBleDoublestep: null
+		FoundBleDoublestep: null,
+		ConnectionFailed: null
 	},
 
 	bind: function(event, callback) {
@@ -64,6 +65,24 @@ var DoublestepSdk = {
 	init: function() {
 		DoublestepSdk.unbindAll();
 		DoublestepSdk.bluetooth.start();
+	},
+
+	stop: function(callback) {
+		DoublestepSdk.bluetooth.stop(function() {
+			bluetoothle.disconnect(function() {
+				bluetoothle.close(function() {
+					console.log("Closed bluetooth connection");
+					DoublestepSdk.bluetooth.connectedDevice = null;
+					if (typeof callback == "function") {
+						callback();
+					}
+				}, DoublestepSdk.error, {
+					address: DoublestepSdk.bluetooth.connectedDevice
+				});
+			}, DoublestepSdk.error, {
+				address: DoublestepSdk.bluetooth.connectedDevice
+			});
+		});
 	},
 
 	onReceivedReading: function(value) {
@@ -174,6 +193,8 @@ var DoublestepSdk = {
 			autoconnect: true
 		},
 
+		connectedDevice: null,
+
 		start: function() {
 			if (!device.isAndroid && !device.isIos) {
 				DoublestepSdk.error("Bluetooth cannot run on this platform");
@@ -193,6 +214,13 @@ var DoublestepSdk = {
 			});
 		},
 
+		stop: function(callback) {
+			console.log("stopping bluetooth comms to device " + DoublestepSdk.bluetooth.connectedDevice);
+			DoublestepSdk.bluetooth.stopDeviceScan(function() {
+				DoublestepSdk.bluetooth.stopListeningForData(callback);
+			});
+		},
+
 		connectOrSearch: function() {
 			if (DoublestepSdk.bluetooth.options.connectTo === null) {
 				console.log("Searching for Bluetooth devices");
@@ -200,8 +228,24 @@ var DoublestepSdk = {
 			} else {
 				DoublestepSdk.bluetooth.connect(DoublestepSdk.bluetooth.options.connectTo, function() {
 					DoublestepSdk.error("Could not connect to the specified bluetooth device address.");
+					DoublestepSdk.execEventHandler("ConnectionFailed");
 				});
 			}
+		},
+
+		stopDeviceScan: function(callback) {
+			console.log("Stopping device scanning");
+			bluetoothle.stopScan(function() {
+				console.log("Stopped scanning");
+				if (typeof callback == "function") {
+					callback();
+				}
+			}, function(error) {
+				DoublestepSdk.error({msg: "Could not stop scanning", obj: error});
+				if (typeof callback == "function") {
+					callback();
+				}
+			});
 		},
 
 		onDeviceScan: function(devices) {
@@ -233,16 +277,48 @@ var DoublestepSdk = {
 			bluetoothle.connect(function() {
 				console.log("Successfully connected to", address);
 				bluetoothle.discover(function(services) {
+					DoublestepSdk.bluetooth.connectedDevice = address;
 					console.log("Discovered services: ", services);
-					console.log("Listening to " + address);
-					bluetoothle.subscribe(DoublestepSdk.bluetooth.onReceivedData, DoublestepSdk.error, {
-						"address": address,
-						serviceUuid:		"6e400001-b5a3-f393-e0a9-e50e24dcca9e",
-						characteristicUuid: "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
-						isNotification: true
-					});
-				}, DoublestepSdk.error, { address: address });
+					DoublestepSdk.bluetooth.listenForData(address);
+				}, function() {
+					DoublestepSdk.error("Failed to Discover");
+				}, { address: address });
 			}, (typeof errorCallback == "function" ? errorCallback : DoublestepSdk.error), { address: address });
+		},
+
+		listenForData: function(address) {
+			console.log("Listening to " + address);
+			bluetoothle.subscribe(DoublestepSdk.bluetooth.onReceivedData, DoublestepSdk.error, {
+				address: address,
+				serviceUuid:		"6e400001-b5a3-f393-e0a9-e50e24dcca9e",
+				characteristicUuid: "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
+				isNotification: true
+			});
+		},
+
+		stopListeningForData: function(callback) {
+			if (DoublestepSdk.bluetooth.connectedDevice !== null) {
+				console.log("Stopping listening for bluetooth data");
+				bluetoothle.unsubscribe(function() {
+					console.log("Stopped listening for bluetooth data");
+					if (typeof callback == "function") {
+						callback();
+					}
+				}, function(error) {
+					DoublestepSdk.error({msg: "Could not stop listening for bluetooth data", obj: error});
+					if (typeof callback == "function") {
+						callback();
+					}
+				}, {
+					address: DoublestepSdk.bluetooth.connectedDevice,
+  					serviceUuid: 		"6e400001-b5a3-f393-e0a9-e50e24dcca9e",
+  					characteristicUuid: "6e400003-b5a3-f393-e0a9-e50e24dcca9e"
+				});
+			} else {
+				if (typeof callback == "function") {
+					callback();
+				}
+			}
 		},
 
 		onReceivedData: function(data) {
@@ -313,6 +389,11 @@ var DoublestepSdk = {
 	},
 
 	error: function(value) {
-		console.error("DoublestepSdk Error: ", value);
+		var e = new Error('dummy');
+		var stack = e.stack.replace(/^[^\(]+?[\n$]/gm, '')
+			.replace(/^\s+at\s+/gm, '')
+			.replace(/^Object.<anonymous>\s*\(/gm, '{anonymous}()@')
+			.split('\n');
+		console.error("DoublestepSdk Error: ", value, stack);
 	}
 };

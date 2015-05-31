@@ -35,6 +35,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			};
 		}
 
+		DoublestepSdk.bluetooth.options.connectTo = localStorage.getItem("doublestepDevice");
 	});
 })
 
@@ -101,6 +102,9 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		if (!device) {
 			alert("Welcome to the Doublestep Demo app!\nLet's start by connecting to the Doublestep.");
 			$state.go("bluetooth");
+		} else {
+			DoublestepSdk.bluetooth.options.connectTo = device;
+			DoublestepSdk.init();
 		}
 	});
 })
@@ -116,19 +120,33 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$scope.setDevice = function(address) {
 		localStorage.setItem("doublestepDevice", address);
 		$scope.savedDevice = address;
+		DoublestepSdk.bluetooth.options.connectTo = address;
+		DoublestepSdk.stop();
+		DoublestepSdk.init();
+		setupBinding();
 	};
 
 	$ionicPlatform.ready(function() {
 
 		DoublestepSdk.bluetooth.options.autoconnect = false;
-		DoublestepSdk.init();
+		DoublestepSdk.stop(function() {
+			DoublestepSdk.bluetooth.options.connectTo = null;
+			setTimeout(function() {
+				DoublestepSdk.init();
+				setupBinding();
+			}, 1000);
+		});
+	});
+
+	function setupBinding() {
 		DoublestepSdk.bind("FoundBleDoublestep", function(device) {
 			if (typeof $scope.devicesFoundAddress[device.address] == "undefined") {
 				$scope.devicesFoundAddress[device.address] = $scope.devicesFound.length;
 				$scope.devicesFound.push(device);
+				$scope.$apply();
 			}
 		});
-	});
+	}
 })
 
 .controller('CallsCtrl', function($scope, $ionicPlatform) {
@@ -173,6 +191,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 	$scope.start = function() {
 		$scope.mediaPlayer.started = true;
+
 
 		DoublestepSdk.init();
 
