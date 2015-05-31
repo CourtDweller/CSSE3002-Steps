@@ -149,8 +149,8 @@ var DoublestepSdk = {
 					}
 					readings[i] = readings[i+1];
 				}
-				console.log("Range Low: " + rangeLow);
-				console.log("Range High: " + rangeHigh);
+				//console.log("Range Low: " + rangeLow);
+				//console.log("Range High: " + rangeHigh);
 				console.log("Value: " + value);
 				readings[numReadings-1] = value;
 				if(value > rangeHigh) {
