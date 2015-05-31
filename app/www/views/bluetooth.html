@@ -1,10 +1,13 @@
 <ion-view view-title="Bluetooth Setup">
 	<ion-content has-bouncing="true" padding="true">
-		<p class="description">Select your Bluetooth device: </p>
+		<p class="description" ng-if="devicesFound.length > 0">Select your Bluetooth device: </p>
+		<p class="description" ng-if="devicesFound.length === 0">No Doublesteps found. Please check that it is turned on, and you have Bluetooth enabled.</p>
 
-		<ul id="deviceList">
-			<li ng-repeat="device in devicesFound">{{device.address}}</li>
+		<ul class="list" id="deviceList">
+			<li class="item" ng-repeat="device in devicesFound" ng-click="setDevice('{{device.address}}')">
+				{{device.name}}
+				<i class="icon ion-checkmark-circled" ng-if="savedDevice == device.address"></i>
+			</li>
 		</ul>
-		
 	</ion-content>
 </ion-view>

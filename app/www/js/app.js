@@ -49,6 +49,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 	$stateProvider.state('doublestep', {
 		url: "/doublestep",
+		controller: 'DoublestepCtrl',
 		templateUrl: "views/doublestep.html"
 	});
 
@@ -92,11 +93,29 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$urlRouterProvider.otherwise('/doublestep');
 })
 
+
+.controller('DoublestepCtrl', function($scope, $ionicPlatform, $state) {
+	$ionicPlatform.ready(function() {
+		var device = localStorage.getItem("doublestepDevice");
+
+		if (!device) {
+			alert("Welcome to the Doublestep Demo app!\nLet's start by connecting to the Doublestep.");
+			$state.go("bluetooth");
+		}
+	});
+})
+
+
 .controller('BluetoothCtrl', function($scope, $ionicPlatform) {
-	$scope.devicesFound = {
-		"123" : {address: "asdf"},
-		"456" : {address: "qwerty"},
-		"789" : {address: "zxvc"}
+
+	$scope.devicesFoundAddress = {};
+	$scope.devicesFound = [];
+
+	$scope.savedDevice = localStorage.getItem("doublestepDevice");
+
+	$scope.setDevice = function(address) {
+		localStorage.setItem("doublestepDevice", address);
+		$scope.savedDevice = address;
 	};
 
 	$ionicPlatform.ready(function() {
@@ -104,7 +123,10 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		DoublestepSdk.bluetooth.options.autoconnect = false;
 		DoublestepSdk.init();
 		DoublestepSdk.bind("FoundBleDoublestep", function(device) {
-			$scope.devicesFound[device.address] = device;
+			if (typeof $scope.devicesFoundAddress[device.address] == "undefined") {
+				$scope.devicesFoundAddress[device.address] = $scope.devicesFound.length;
+				$scope.devicesFound.push(device);
+			}
 		});
 	});
 })
@@ -390,3 +412,11 @@ function pad(num, size) {
 	while (s.length < size) s = "0" + s;
 	return s;
 }
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};

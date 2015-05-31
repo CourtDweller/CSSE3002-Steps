@@ -82,18 +82,14 @@ td {
 	margin: 0px auto;
 }
 
-#deviceList {
-	width: 100%;
-	margin: 0px auto;
+#deviceList .icon {
+	color: green;
+	position: absolute;
+	font-size: 28px;
+	right: -18px;
+	top: 13px;
 }
 
-#deviceList td {
-	text-align: center;
-	padding-top: 0px;
-	padding-bottom: 0px;
-	padding-left: 10px;
-	padding-right: 10px;
-}
 
 .selected {
 	background-color: #727272;
