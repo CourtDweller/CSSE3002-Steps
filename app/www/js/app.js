@@ -121,9 +121,13 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		localStorage.setItem("doublestepDevice", address);
 		$scope.savedDevice = address;
 		DoublestepSdk.bluetooth.options.connectTo = address;
-		DoublestepSdk.stop();
-		DoublestepSdk.init();
-		setupBinding();
+		DoublestepSdk.stop(function() {
+			setTimeout(function() {
+				DoublestepSdk.init();
+				setupBinding();
+			}, 1000);
+		});
+
 	};
 
 	$ionicPlatform.ready(function() {
@@ -158,9 +162,8 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$scope.start = function() {
 		$scope.calls.started = true;
 
-		DoublestepSdk.init();
-
-		DoublestepSdk.bind("DoubleBackTap", function() {
+		DoublestepSdk.unbindAll();
+		DoublestepSdk.bind("LongBackTap", function() {
 			if ($scope.calls.phoneState == "RINGING") {
 				PhoneAttendant.declineCall(function(success) {
 					console.log("Phone call declined");
@@ -192,25 +195,18 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	$scope.start = function() {
 		$scope.mediaPlayer.started = true;
 
-
-		DoublestepSdk.init();
-
-		DoublestepSdk.bind("FrontTap", function() {
+		DoublestepSdk.unbindAll();
+		DoublestepSdk.bind("BackTap", function() {
 			console.log("previous");
 			MediaController.previous();
 		});
 
-		DoublestepSdk.bind("BackTap", function() {
+		DoublestepSdk.bind("FrontTap", function() {
 			console.log("next");
 			MediaController.next();
 		});
 
-		DoublestepSdk.bind("DoubleFrontTap", function() {
-			console.log("stop");
-			MediaController.stop();
-		});
-
-		DoublestepSdk.bind("DoubleBackTap", function() {
+		DoublestepSdk.bind("LongBackTap", function() {
 			console.log("pause/play");
 			if (isPaused) {
 				isPaused = false;

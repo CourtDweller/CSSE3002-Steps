@@ -11,7 +11,7 @@ var backTapValue = 0;
 var frontTapTime = 0;
 var backTapTime = 0;
 var date = new Date();
-var longDuration = 2000;
+var longDuration = 1500;
 var time = -1;
 var frontTapNeedsLogging = false;
 var backTapNeedsLogging = false;
@@ -60,6 +60,7 @@ var DoublestepSdk = {
 	},
 
 	init: function() {
+		console.log("Initialising Doublestep SDK");
 		DoublestepSdk.unbindAll();
 		DoublestepSdk.bluetooth.start();
 	},
@@ -73,10 +74,20 @@ var DoublestepSdk = {
 					if (typeof callback == "function") {
 						callback();
 					}
-				}, DoublestepSdk.error, {
+				}, function(error) {
+					DoublestepSdk.error({msg: "Could not close bluetooth connection", obj: error});
+					if (typeof callback == "function") {
+						callback();
+					}
+				}, {
 					address: DoublestepSdk.bluetooth.connectedDevice
 				});
-			}, DoublestepSdk.error, {
+			}, function(error) {
+				DoublestepSdk.error({msg: "Could not disconnect from device", obj: error});
+				if (typeof callback == "function") {
+					callback();
+				}
+			}, {
 				address: DoublestepSdk.bluetooth.connectedDevice
 			});
 		});
@@ -202,7 +213,7 @@ var DoublestepSdk = {
 		},
 
 		stop: function(callback) {
-			console.log("stopping bluetooth comms to device " + DoublestepSdk.bluetooth.connectedDevice);
+			console.log("Stopping bluetooth comms to device " + DoublestepSdk.bluetooth.connectedDevice);
 			DoublestepSdk.bluetooth.stopDeviceScan(function() {
 				DoublestepSdk.bluetooth.stopListeningForData(callback);
 			});
@@ -221,17 +232,17 @@ var DoublestepSdk = {
 		},
 
 		stopDeviceScan: function(callback) {
-			console.log("Stopping device scanning");
+			console.log("Stopping device scanning", callback);
 			bluetoothle.stopScan(function() {
 				console.log("Stopped scanning");
 				if (typeof callback == "function") {
 					callback();
 				}
 			}, function(error) {
-				DoublestepSdk.error({msg: "Could not stop scanning", obj: error});
 				if (typeof callback == "function") {
 					callback();
 				}
+				DoublestepSdk.error({msg: "Could not stop scanning", obj: error});
 			});
 		},
 
