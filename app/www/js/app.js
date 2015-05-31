@@ -245,7 +245,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 		var timer = null;
 		var secondsElapsed = 0;
 
-		DoublestepSdk.init();
+		DoublestepSdk.unbindAll();
 		DoublestepSdk.bind("ReceivedReading", function(value) {
 			if (readings.length === 0) {
 				setTimeout(function() {
@@ -388,10 +388,42 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 	};
 
 	$scope.stopAlarmSound = function() {
-		alarmSound.stop();
-		alarmSound.release();
-		alarmSound = null;
+		if (alarmSound !== null) {
+			alarmSound.stop();
+			alarmSound.release();
+			alarmSound = null;
+		}
 	};
+
+	$ionicPlatform.ready(function() {
+		var readings = [];
+		var alarmAvg = null;
+
+		DoublestepSdk.unbindAll();
+		DoublestepSdk.bind("ReceivedReading", function(value) {
+			if (readings.length === 0) {
+				setTimeout(function() {
+					var avg = 0;
+					for (var i=0; i<readings.length; i++) {
+						avg += readings[i];
+					}
+					alarmAvg = avg/readings.length;
+					console.log(alarmAvg);
+				}, 1000);
+			}
+
+			if (alarmAvg === null) {
+				readings.push(value);
+			} else {
+				if (value > alarmAvg*1.5) {
+					$scope.stopAlarmSound();
+					$scope.stopAlarm();
+				}
+			}
+		});
+
+		//DoublestepSdk.simulate.startVariedData(500, 10);
+	});
 })
 
 .controller('BleCtrl', function($scope, $ionicPlatform) {
