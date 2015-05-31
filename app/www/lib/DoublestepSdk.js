@@ -90,11 +90,11 @@ var DoublestepSdk = {
 					frontTapValue = value;
 					if((date.getTime() - frontTapTime) < breakTime) {
 						DoublestepSdk.execEventHandler("DoubleFrontTap");
-												doubleFrontTime = time;
-												frontTapNeedsLogging = false;
+						doubleFrontTime = time;
+						frontTapNeedsLogging = false;
 					} else {
-												frontTapNeedsLogging = true;
-										}
+						frontTapNeedsLogging = true;
+					}
 					frontTapTime = time;
 					//$scope.messages.push("Heel tap: " + frontTapTime + " Val: " + frontTapValue);
 					//$scope.$apply();
@@ -110,11 +110,11 @@ var DoublestepSdk = {
 					backTapValue = value;
 					if((date.getTime() - backTapTime) < breakTime) {
 						DoublestepSdk.execEventHandler("DoubleBackTap");
-												doubleBackTime = time;
-												backTapNeedsLogging = false;
+						doubleBackTime = time;
+						backTapNeedsLogging = false;
 					} else {
-												backTapNeedsLogging = true;
-										}
+						backTapNeedsLogging = true;
+					}
 					backTapTime = time;
 					//$scope.messages.push("Toe tap: " + backTapTime + " Val: " + backTapValue);
 					//$scope.$apply();
