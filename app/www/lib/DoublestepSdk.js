@@ -1,23 +1,24 @@
-var readings = [];
-var rangeHigh = 0;
-var rangeLow = 1023;
-var numReadings = 20;
-var checkFrontLift = false;
-var checkBackLift = false;
-var checkFrontDrop = false;
-var checkBackDrop = false;
-var frontTapValue = 1023;
-var backTapValue = 0;
-var frontTapTime = 0;
-var backTapTime = 0;
-var date = new Date();
-var longDuration = 1500;
-var time = -1;
-var frontTapNeedsLogging = false;
-var backTapNeedsLogging = false;
-var expiry = 5000;
-var lowerOutlier = 0.85;
-var upperOutlier = 1.15;
+/*
+ * Note: Front tap refers to the inital raise and then drop of the ball of your foot.
+ * 	 Back tap refers to the initial raise and then drop of the heel of your foot.
+ * 	 Long tap means you leave your foot in the raised state for a minimum of 1.5 seconds.
+ */
+var readings = []; // Array to store latest pressure readings
+var rangeHigh = 0; // Maximum 'normal' pressure reading
+var rangeLow = 1023; // Minimum 'normal' pressure reading
+var numReadings = 20; // The number of values stored in 'readings', 20 readings is approx 1 second
+var checkFrontLift = false; // In the intial phase of a front tap
+var checkBackLift = false; // In the inital phase of a back tap
+var checkFrontDrop = false; // In the second phase of a front tap
+var checkBackDrop = false; // In the second phase of a back tap
+var frontTapTime = 0; // The time at which the last front tap began (the ball of the foot was raised off the ground)
+var backTapTime = 0; // The time at which the last back tap begain (the heel was raised off the ground)
+var date = new Date(); // Current date, used to access current time
+var longDuration = 1500; // Minimum duration of a long tap
+var time = -1; // Current time
+var expiry = 5000; // Time after which, if a tap is started and not finished, it is ignored
+var lowerOutlier = 0.85; // Ratio applied to pressure reading to determine the lower range bounds
+var upperOutlier = 1.15; // Ratio applied to pressure reading to determine the upper range bounds
 
 var DoublestepSdk = {
 
@@ -93,95 +94,162 @@ var DoublestepSdk = {
 		});
 	},
 
+	/* 
+	 * Called whenever the device recieves data over bluetooth (i.e. each 
+	 * time it recieves a pressure reading). Stores recent pressure readings
+	 * to detect any taps (front tap, back tap, long front tap or long back 
+	 * tap) the user makes.
+	 */
 	onReceivedReading: function(value) {
+		
 		value = parseInt(value);
-		value = value - 60;
+		value = value - 60; // Pressure when foot in air is approx 60, want this to be 0
 
 		date = new Date();
-		time = date.getTime();
+		time = date.getTime(); // Get the time at which this readings was recieved in ms
+
+		// Timeout on waiting for back tap to end. Ignore it, assuming the user has changed state
+		// (sitting to standing etc.) and reset readings
 		if(checkBackDrop && (time > backTapTime + expiry)) {
 			checkBackDrop = false;
 			readings = [];
+		// Timeout on waiting for front tap to end. Ignore it, assuming the user has changed state
+		// (siting to standing etc.) and reset readings
 		} else if(checkFrontDrop && (time > frontTapTime + expiry)) {
 			checkFrontDrop = false;
 			readings = [];
 		}
+
+
+
+		// Haven't got enough readings to accurately determine 'normal' range of pressures,
+		// keep filling up the array
 		if(readings.length < numReadings) {
 			readings.push(value);
 			console.log("getting initial num readings: " + readings.length);
+		// Have enough readings to accurately determine 'normal' range of pressures
 		} else {
+			// EACH MAIN BRANCH BELOW REPRESENTS 5 STATES: 
+			// 	Initial phase of front tap
+			// 	Initial phase of back tap
+			// 	End pahse of front tap
+			// 	End phase of back tap
+			// 	Normal
+			// ONLY EVERY GO THROUGH 1 OF THESE FOR A GIVEN READING, BUT POTENTIALLY
+			// TRIGGER A CHANGE OF STATE FOR THE NEXT READING
+
 			// This is the start of a front tap
 			if(checkFrontLift) {
-				frontTapValue = value;
+				// Record the time the tap started, then start looking for
+				// second stage of tap (drop of ball of foot back to ground)
 				frontTapTime = time;
 				checkFrontLift = false;
 				checkFrontDrop = true;
 			// Think is the start of a back tap
 			} else if(checkBackLift) {
-				backTapValue = value;
+				// Record the time the tap started, then start looking for 
+				// second stage of tap (drop of heel back to ground)
 				backTapTime = time;
 				checkBackLift = false;
 				checkBackDrop = true;
 			// Waiting for end of front tap
 			} else if(checkFrontDrop) {
-				if(value < rangeHigh) {
+				// Pressure back in normal range - ball of foot has dropped back to ground
+				if(value < rangeHigh) {	
 					console.log("Detected front drop");
+					// Tap has finished, reset readings to determine normal range in
+					// case user has changed stance post-tap
 					checkFrontDrop = false;
-					rangeLow = 1023;
-					rangeHigh = 0;
 					readings = [];
+					// Regular front tap
 					if(time - frontTapTime < longDuration) {
 						console.log("Front tap");
+						// Fires the 'Front Tap' event handler, developer can
+						// assign custom action to this event
 						DoublestepSdk.execEventHandler('FrontTap', value);
+					// Long tap
 					} else {
 						console.log("Long front tap");
+						// Fires the 'Long Front Tap' event handler, developer can
+						// assign custom action to this event
 						DoublestepSdk.execEventHandler('LongFrontTap', value);
 					}
 				}
 			// Waiting for end of back tap
 			} else if(checkBackDrop) {
+				// Pressure back in normal range - heel has dropped back to ground
 				if(value > rangeLow) {
 					console.log("Detected back drop");
+					// Tap has finished, reset readings to determine normal range in
+					// case user has changed stance post-tap
 					checkBackDrop = false;
-					rangeLow = 1023;
-					rangeHigh = 0;
 					readings = [];
+					// Regular back tap
 					if(time - backTapTime < longDuration) {
+						// Fires the 'Back Tap' event handler, developer can
+						// assign custom action to this event
 						console.log("Back tap");
 						DoublestepSdk.execEventHandler('BackTap', value);
+					// Long tap
 					} else {
+						// Fires the 'Long Back Tap' event handler, developer can
+						// assign custom action to this event
 						console.log("Long back tap");
 						DoublestepSdk.execEventHandler('LongBackTap', value);
 					}
 				}
-
 			// Think foot is stationery
 			} else {
-				frontTapValue = 1023;
-				backTapValue = 0;
+				// Reset range so it will be determined only by current state of the array
 				rangeHigh = 0;
 				rangeLow = 1023;
+
+				// UPDATE RANGE BASED ON PREVIOUS READINGS
+				// Loop through readings array (only going up to length of array (numReadings)
+				// - 1 because will be indexing the i+1 th element
 				for (var i = 0; i < (numReadings-1); i++) {
+					// If the reading is higher than the current range high, update it
+					// Also apply ratio to make sure that if a value is outside the range,
+					// then it is significantly different to a 'normal' value
 					if (rangeHigh < parseInt(readings[i])*upperOutlier) {
 						rangeHigh = parseInt(readings[i])*upperOutlier;
 					}
+					// If the reading is lower than teh current range low, update it
+					// Also apply a ratio to make sure that if a value is outside the range,
+					// then it is significantly different to a 'normal' value
 					if (rangeLow > parseInt(readings[i])*lowerOutlier) {
 						rangeLow = parseInt(readings[i])*lowerOutlier;
 					}
+
+					// Push all readings back 1 slot in the array to make space for the new
+					// one, effectively overwrites the 0th (i.e. the oldest) reading
 					readings[i] = readings[i+1];
 				}
+
 				console.log("Value: " + value + " Low: " + rangeLow + " High: " + rangeHigh);
+				
+				// ADD NEW READING. Note this only happens if we're not detecting any
+				// type of tap, and in this way we only store 'normal' readings in the
+				// readings array, to avoid skewing the range high and low variables
+
+				// Store the current pressure value at the end of the readings array
 				readings[numReadings-1] = value;
+
+				// If the current reading is above the normal range, ball of the foot
+				// is raised and this is the start of a front tap
 				if(value > rangeHigh) {
 					checkFrontLift = true;
 					console.log("Check front tap is now true");
+				// If the current readings is below the normal range, ball of the foot
+				// is raised and this is the start of a back tap
 				} else if(value < rangeLow) {
 					checkBackLift = true;
 					console.log("Check back tap is now true");
 				}
 			}
 		}
-
+		// Fires the 'Received Reading' event handler, developer can assign custom action to 
+		// this event
 		DoublestepSdk.execEventHandler('ReceivedReading', value);
 	},
 
