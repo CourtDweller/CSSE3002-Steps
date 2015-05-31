@@ -34,7 +34,7 @@ var DoublestepSdk = {
 
 	bind: function(event, callback) {
 		if (typeof DoublestepSdk.eventHandlers[event] == "undefined") {
-			console.error("This is not a valid event handler");
+			DoublestepSdk.error("This is not a valid event handler");
 		} else {
 			DoublestepSdk.eventHandlers[event] = callback;
 		}
@@ -42,7 +42,7 @@ var DoublestepSdk = {
 
 	unbind: function(event) {
 		if (typeof DoublestepSdk.eventHandlers[event] == "undefined") {
-			console.error("This is not a valid event handler");
+			DoublestepSdk.error("This is not a valid event handler");
 		} else {
 			DoublestepSdk.eventHandlers[event] = null;
 		}
@@ -175,17 +175,17 @@ var DoublestepSdk = {
 
 		start: function() {
 			if (!device.isAndroid && !device.isIos) {
-				console.error("Bluetooth cannot run on this platform");
+				DoublestepSdk.error("Bluetooth cannot run on this platform");
 				return;
 			}
 			console.log("Starting the Bluetooth service");
 			bluetoothle.isEnabled(function(enabled) {
 				if (enabled) {
-					bluetoothle.initialize(DoublestepSdk.bluetooth.connectOrSearch, console.error);
+					bluetoothle.initialize(DoublestepSdk.bluetooth.connectOrSearch, DoublestepSdk.error);
 				} else {
 					console.log("Bluetooth is not enabled - attempting to enable");
 					bluetoothle.enable(function() {
-						bluetoothle.initialize(DoublestepSdk.bluetooth.connectOrSearch, console.error);
+						bluetoothle.initialize(DoublestepSdk.bluetooth.connectOrSearch, DoublestepSdk.error);
 					});
 				}
 
@@ -195,10 +195,10 @@ var DoublestepSdk = {
 		connectOrSearch: function() {
 			if (DoublestepSdk.bluetooth.options.connectTo === null) {
 				console.log("Searching for Bluetooth devices");
-				bluetoothle.startScan(DoublestepSdk.bluetooth.onDeviceScan, console.error);
+				bluetoothle.startScan(DoublestepSdk.bluetooth.onDeviceScan, DoublestepSdk.error);
 			} else {
 				DoublestepSdk.bluetooth.connect(DoublestepSdk.bluetooth.options.connectTo, function() {
-					console.error("Could not connect to the specified bluetooth device address.");
+					DoublestepSdk.error("Could not connect to the specified bluetooth device address.");
 				});
 			}
 		},
@@ -234,14 +234,14 @@ var DoublestepSdk = {
 				bluetoothle.discover(function(services) {
 					console.log("Discovered services: ", services);
 					console.log("Listening to " + address);
-					bluetoothle.subscribe(DoublestepSdk.bluetooth.onReceivedData, console.error, {
+					bluetoothle.subscribe(DoublestepSdk.bluetooth.onReceivedData, DoublestepSdk.error, {
 						"address": address,
 						serviceUuid:		"6e400001-b5a3-f393-e0a9-e50e24dcca9e",
 						characteristicUuid: "6e400003-b5a3-f393-e0a9-e50e24dcca9e",
 						isNotification: true
 					});
-				}, console.error, { address: address });
-			}, (typeof errorCallback == "function" ? errorCallback : console.error), { address: address });
+				}, DoublestepSdk.error, { address: address });
+			}, (typeof errorCallback == "function" ? errorCallback : DoublestepSdk.error), { address: address });
 		},
 
 		onReceivedData: function(data) {
@@ -309,5 +309,9 @@ var DoublestepSdk = {
 			clearInterval(DoublestepSdk.simulate.randomDataTimer);
 			clearInterval(DoublestepSdk.simulate.variedDataTimer);
 		}
+	},
+	
+	error: function(value) {
+		console.error("DoublestepSdk Error: ", value);
 	}
 };

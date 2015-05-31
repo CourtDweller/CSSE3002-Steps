@@ -207,7 +207,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			if (balanceAvg === null) {
 				readings.push(value);
 			} else {
-				if (value > balanceAvg*1.1 || value < balanceAvg*0.1) {
+				if (/*value > balanceAvg*1.2 || */value < balanceAvg*0.2) {
 					$scope.balance.canRestart = true;
 					$scope.$apply();
 					angular.element(document.querySelector("#balanceMarker")).css({
@@ -217,7 +217,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 
 					DoublestepSdk.unbind("ReceivedReading");
 					clearInterval(timer);
-					DoublestepSdk.simulate.stop();
+					//DoublestepSdk.simulate.stop();
 
 					alert("You lasted " + $scope.balance.timeElapsed);
 				} else {
@@ -230,7 +230,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 			}
 		});
 
-		DoublestepSdk.simulate.startVariedData(500, 10);
+		//DoublestepSdk.simulate.startVariedData(500, 10);
 	});
 })
 
