@@ -330,7 +330,7 @@ var Doublestep = angular.module('Doublestep', ['ionic'])
 				// we have an average, so we must already be in-game
 
 				// check if our balance is within tollerance
-				if (/*value > balanceAvg*1.2 || */value < balanceAvg*0.6) {
+				if (/*value > balanceAvg*1.2 || */value < balanceAvg*0.4) {
 					// nope - we are out of tollerence, so we must have lost balance
 					// allow the user to resatart.
 					$scope.balance.canRestart = true;
